@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Bookings</title>
+<style>
+body { font-family:Arial; background:#f4f6f8; padding:20px; }
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.back-btn { background:#3498db; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; text-decoration:none; }
+.back-btn:hover { background:#2980b9; }
+.booking-list { display:grid; gap:20px; }
+.booking-card { background:white; border-radius:8px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+.booking-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
+.mall-name { font-size:18px; font-weight:bold; }
+.booking-status { padding:5px 10px; border-radius:4px; color:white; font-size:12px; }
+.status-active { background:#2ecc71; }
+.status-completed { background:#95a5a6; }
+.status-cancelled { background:#e74c3c; }
+.booking-details { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; }
+.detail-item { display:flex; flex-direction:column; }
+.detail-label { font-weight:bold; color:#666; margin-bottom:5px; }
+.detail-value { color:#333; }
+.action-buttons { display:flex; gap:10px; margin-top:15px; }
+.action-btn { background:#3498db; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
+.action-btn:hover { background:#2980b9; }
+.cancel-btn { background:#e74c3c; }
+.cancel-btn:hover { background:#c0392b; }
+.complete-btn { background:#2ecc71; }
+.complete-btn:hover { background:#27ae60; }
+.empty-state { text-align:center; padding:40px; color:#666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>My Parking Bookings</h1>
+  <a href="mall-parking.html" class="back-btn">Back to Parking</a>
+</div>
+
+<div class="booking-list" id="bookingList"></div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+// Load user bookings
+fetch(`http://localhost:8080/api/mall-bookings/user/${userId}`)
+  .then(res => res.json())
+  .then(bookings => {
+    displayBookings(bookings);
+  });
+
+function displayBookings(bookings) {
+  const container = document.getElementById("bookingList");
+  
+  if (bookings.length === 0) {
+    container.innerHTML = '<div class="empty-state">No bookings found. <a href="mall-selection.html">Select a mall</a> to book a parking slot.</div>';
+    return;
+  }
+
+  container.innerHTML = bookings.map(booking => `
+    <div class="booking-card">
+      <div class="booking-header">
+        <div class="mall-name">${booking.mall.name}</div>
+        <div class="booking-status status-${booking.status.toLowerCase()}">${booking.status}</div>
+      </div>
+      
+      <div class="booking-details">
+        <div class="detail-item">
+          <div class="detail-label">Slot Number</div>
+          <div class="detail-value">${booking.parkingSlot.slotNumber}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Level</div>
+          <div class="detail-value">Level ${booking.parkingSlot.level}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Zone</div>
+          <div class="detail-value">${booking.parkingSlot.zone}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Booking Date</div>
+          <div class="detail-value">${booking.bookingDate}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Check-in Time</div>
+          <div class="detail-value">${booking.checkInTime || 'Not checked in'}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Check-out Time</div>
+          <div class="detail-value">${booking.checkOutTime || 'Not checked out'}</div>
+        </div>
+      </div>
+      
+      ${booking.status === 'ACTIVE' ? `
+        <div class="action-buttons">
+          <button class="action-btn complete-btn" onclick="completeBooking(${booking.id})">Complete Booking</button>
+          <button class="action-btn cancel-btn" onclick="cancelBooking(${booking.id})">Cancel Booking</button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function completeBooking(bookingId) {
+  if (confirm('Are you sure you want to complete this booking?')) {
+    fetch(`http://localhost:8080/api/mall-bookings/complete/${bookingId}`, {
+      method: "POST"
+    })
+    .then(res => res.text())
+    .then(() => {
+      alert('Booking completed successfully!');
+      location.reload();
+    })
+    .catch(() => alert('Failed to complete booking'));
+  }
+}
+
+function cancelBooking(bookingId) {
+  if (confirm('Are you sure you want to cancel this booking?')) {
+    fetch(`http://localhost:8080/api/mall-bookings/cancel/${bookingId}`, {
+      method: "POST"
+    })
+    .then(res => res.text())
+    .then(() => {
+      alert('Booking cancelled successfully!');
+      location.reload();
+    })
+    .catch(() => alert('Failed to cancel booking'));
+  }
+}
+</script>
+
+</body>
+</html>

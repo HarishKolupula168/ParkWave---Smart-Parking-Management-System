@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mall Parking Map</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body { 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header { 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+  margin-bottom:30px; 
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.mall-info { 
+  background: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(10px);
+  padding:24px; 
+  border-radius:16px; 
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex: 1;
+}
+
+.mall-info h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.mall-info p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.booking-btn { 
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); 
+  color:white; 
+  border:none; 
+  padding:12px 24px; 
+  border-radius:12px; 
+  cursor:pointer; 
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+}
+
+.booking-btn:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
+}
+
+.level-tabs { 
+  display:flex; 
+  gap:12px; 
+  margin-bottom:30px; 
+  flex-wrap: wrap;
+}
+
+.level-tab { 
+  background: rgba(255, 255, 255, 0.2);
+  color: white; 
+  border:1px solid rgba(255, 255, 255, 0.3);
+  padding:12px 24px; 
+  border-radius:12px; 
+  cursor:pointer; 
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.level-tab.active { 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.level-tab:hover { 
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.level-tab.active:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.parking-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.parking-layout {
+  position: relative;
+  margin: 20px 0;
+}
+
+.entry-exit-sign {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.entry-exit-sign.entry {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.entry-exit-sign.exit {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.road {
+  background: #1f2937;
+  height: 40px;
+  margin: 20px 0;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.road::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    #fbbf24 0px,
+    #fbbf24 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  transform: translateY(-50%);
+}
+
+.road-label {
+  color: #fbbf24;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 1;
+  background: rgba(31, 41, 55, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.parking-grid { 
+  display:grid; 
+  grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); 
+  gap:12px; 
+  margin:20px 0; 
+}
+
+.connecting-road {
+  background: #1f2937;
+  height: 20px;
+  margin: 10px 0;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  grid-column: 1 / -1;
+}
+
+.connecting-road::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #fbbf24 0px,
+    #fbbf24 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  transform: translateY(-50%);
+}
+
+.vertical-road {
+  background: #1f2937;
+  width: 20px;
+  margin: 0 10px;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  grid-row: span 2;
+}
+
+.vertical-road::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(
+    0deg,
+    #fbbf24 0px,
+    #fbbf24 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  transform: translateX(-50%);
+}
+
+.slot { 
+  width:90px; 
+  height:110px; 
+  border:2px solid #e2e8f0; 
+  border-radius:12px; 
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  justify-content:center; 
+  font-size:11px; 
+  font-weight:600; 
+  cursor:pointer; 
+  transition:all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.3;
+}
+
+.available { 
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+  color:white; 
+  border-color: #10b981;
+}
+
+.booked { 
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+  color:white; 
+  border-color: #ef4444;
+}
+
+.handicapped { 
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+  color:white; 
+  border-color: #f59e0b;
+}
+
+.vip { 
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); 
+  color:white; 
+  border-color: #8b5cf6;
+}
+
+.near-entrance { 
+  border-color: #10b981; 
+  border-width: 3px;
+}
+
+.middle { 
+  border-color: #3b82f6; 
+  border-width: 3px;
+}
+
+.far { 
+  border-color: #64748b; 
+  border-width: 3px;
+}
+
+.slot:hover { 
+  transform:scale(1.05) translateY(-4px); 
+  box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+.slot-number {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.slot-status {
+  font-size: 9px;
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+
+.slot-zone {
+  font-size: 8px;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.legend { 
+  display:flex; 
+  gap:20px; 
+  justify-content:center; 
+  margin:30px 0; 
+  flex-wrap: wrap;
+}
+
+.legend-item { 
+  display:flex; 
+  align-items:center; 
+  gap:8px; 
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.legend-color { 
+  width:24px; 
+  height:24px; 
+  border-radius:6px; 
+}
+
+.back-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-link a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  font-weight: 500;
+}
+
+.back-link a:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .parking-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  }
+  
+  .slot {
+    width: 70px;
+    height: 90px;
+  }
+  
+  .level-tabs {
+    justify-content: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="mall-info" id="mallInfo">
+    <h3 id="mallName">Loading...</h3>
+    <p id="mallDetails">Loading parking information...</p>
+  </div>
+  <button class="booking-btn" onclick="viewBookings()">My Bookings</button>
+</div>
+
+<div class="level-tabs" id="levelTabs"></div>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-color" style="background:#2ecc71;"></div>
+    <span>Available</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background:#e74c3c;"></div>
+    <span>Booked</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background:#f39c12;"></div>
+    <span>Handicapped</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background:#9b59b6;"></div>
+    <span>VIP</span>
+  </div>
+</div>
+
+<div class="parking-container">
+  <div class="parking-layout">
+    <div class="entry-exit-sign entry">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+      ENTRANCE
+    </div>
+    
+    <div class="road">
+      <span class="road-label">Main Access Road</span>
+    </div>
+    
+    <div class="parking-grid" id="parkingGrid"></div>
+    
+    <div class="road">
+      <span class="road-label">Exit Route</span>
+    </div>
+    
+    <div class="entry-exit-sign exit">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      EXIT
+    </div>
+  </div>
+</div>
+
+<script>
+const mallId = localStorage.getItem("selectedMallId");
+let currentLevel = 1;
+let mallData = null;
+
+// Load mall information
+fetch(`http://localhost:8080/api/malls/${mallId}`)
+  .then(res => res.json())
+  .then(mall => {
+    mallData = mall;
+    document.getElementById("mallName").textContent = mall.name;
+    document.getElementById("mallDetails").textContent = 
+      `${mall.location} | Total Slots: ${mall.totalSlots} | Levels: ${mall.parkingLevels}`;
+    
+    // Create level tabs
+    createLevelTabs(mall.parkingLevels);
+    
+    // Load first level
+    loadParkingSlots(currentLevel);
+  });
+
+function createLevelTabs(levels) {
+  const container = document.getElementById("levelTabs");
+  container.innerHTML = "";
+  
+  for (let i = 1; i <= levels; i++) {
+    const button = document.createElement("button");
+    button.className = `level-tab ${i === 1 ? 'active' : ''}`;
+    button.textContent = `Level ${i}`;
+    button.onclick = () => switchLevel(i);
+    container.appendChild(button);
+  }
+}
+
+function switchLevel(level) {
+  currentLevel = level;
+  
+  // Update active tab
+  document.querySelectorAll(".level-tab").forEach((tab, index) => {
+    tab.className = `level-tab ${index + 1 === level ? 'active' : ''}`;
+  });
+  
+  loadParkingSlots(level);
+}
+
+function loadParkingSlots(level) {
+  fetch(`http://localhost:8080/api/mall-parking/slots/${mallId}/level/${level}`)
+    .then(res => res.json())
+    .then(slots => {
+      const container = document.getElementById("parkingGrid");
+      container.innerHTML = "";
+      container.style.display = "grid";
+      container.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
+      container.style.gap = "12px";
+      container.style.margin = "20px 0";
+
+      const slotsPerRow = 9; 
+      const totalRows = Math.ceil(slots.length / slotsPerRow);
+
+      for (let row = 0; row < totalRows; row++) {
+        // Add connecting road before each row except the first
+        if (row > 0) {
+          const road = document.createElement("div");
+          road.className = "connecting-road";
+          container.appendChild(road);
+        }
+
+        // Add slots for this row with vertical roads
+        const startIdx = row * slotsPerRow;
+        const endIdx = Math.min(startIdx + slotsPerRow, slots.length);
+        
+        for (let i = startIdx; i < endIdx; i++) {
+          const slot = slots[i];
+          const div = document.createElement("div");
+          
+          let statusClass = slot.status === "BOOKED" ? "booked" : "available";
+          let typeClass = slot.slotType.toLowerCase();
+          let priorityClass = slot.priority.toLowerCase().replace('_', '-');
+          
+          div.className = `slot ${statusClass} ${typeClass} ${priorityClass}`;
+          
+          div.innerHTML = `
+            <div>${slot.slotNumber}</div>
+            <div style="font-size:10px;">${slot.status}</div>
+            <div style="font-size:8px;">${slot.zone}</div>
+          `;
+
+          if (slot.status === "AVAILABLE") {
+            div.onclick = () => bookSlot(slot.id);
+            div.title = `Book slot ${slot.slotNumber} (${slot.priority})`;
+          } else {
+            div.title = `Slot ${slot.slotNumber} is booked`;
+          }
+
+          container.appendChild(div);
+
+          // Add vertical road after 3rd and 6th slot only (2 vertical roads total)
+          const columnInRow = (i - startIdx + 1);
+          if (columnInRow === 3 || columnInRow === 6) {
+            const verticalRoad = document.createElement("div");
+            verticalRoad.className = "vertical-road";
+            container.appendChild(verticalRoad);
+          }
+        }
+      }
+    });
+}
+
+function bookSlot(slotId) {
+  const userId = localStorage.getItem("userId");
+  
+  // Check if user is logged in
+  if (!userId) {
+    // Guest booking - create temporary user
+    const guestName = prompt("Enter your name for guest booking:");
+    if (!guestName) return;
+    
+    // Create guest booking without userId
+    fetch(`http://localhost:8080/api/mall-bookings/guest?guestName=${encodeURIComponent(guestName)}&mallId=${mallId}&slotId=${slotId}`, {
+      method: "POST"
+    })
+    .then(res => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(() => {
+      alert("Slot booked successfully as guest!");
+      loadParkingSlots(currentLevel);
+    })
+    .catch(() => alert("Booking failed - slot may already be booked"));
+  } else {
+    // Regular user booking
+    fetch(`http://localhost:8080/api/mall-bookings?userId=${userId}&mallId=${mallId}&slotId=${slotId}`, {
+      method: "POST"
+    })
+    .then(res => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(() => {
+      alert("Slot booked successfully!");
+      loadParkingSlots(currentLevel);
+    })
+    .catch(() => alert("Booking failed - slot may already be booked"));
+  }
+}
+
+function viewBookings() {
+  window.location.href = "mall-bookings.html";
+}
+</script>
+
+</body>
+</html>

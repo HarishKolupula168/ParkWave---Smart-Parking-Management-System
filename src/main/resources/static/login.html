@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<style>
+body { background:#eef2f5; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; }
+.box { background:white; padding:30px; width:300px; border-radius:8px; }
+input,button { width:100%; padding:10px; margin:10px 0; }
+button { background:#3498db; color:white; border:none; }
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Login</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<a href="register.html">Register</a>
+</div>
+
+<script>
+function login() {
+    fetch("http://localhost:8080/api/users/login-with-id", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: email.value,
+            password: password.value
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Invalid");
+        }
+        return res.json();   // ✅ TEXT, not JSON
+    })
+    .then(user => {
+        if (user) {
+            localStorage.setItem("userEmail", user.email);
+            localStorage.setItem("userId", user.id);
+            alert("Login successful");
+            window.location.href = "mall-selection.html";
+        } else {
+            alert("Invalid email or password");
+        }
+    })
+    .catch(() => alert("Invalid email or password"));
+}
+</script>
+
+
+</body>
+</html>

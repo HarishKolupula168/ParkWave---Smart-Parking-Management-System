@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+<style>
+body { background:#eef2f5; display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; }
+.box { background:white; padding:30px; width:320px; border-radius:8px; }
+input,button { width:100%; padding:10px; margin:10px 0; }
+button { background:#2ecc71; color:white; border:none; }
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Register</h2>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<a href="login.html">Login</a>
+</div>
+
+<script>
+function register(){
+ fetch("http://localhost:8080/api/users/register",{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify({
+    name: name.value,
+    email: email.value,
+    password: password.value
+  })
+ })
+ .then(res=>{
+   if(!res.ok) throw new Error();
+   alert("Registration successful");
+   location.href="login.html";
+ })
+ .catch(()=>alert("Registration failed"));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: parkwave
+    env: docker
+    repo: https://github.com/HarishKolupula168/ParkWave---Smart-Parking-Management-System.git
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://your-db-host:3306/parkwave
+      - key: SPRING_DATASOURCE_USERNAME
+        value: your-db-username
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: your-db-password

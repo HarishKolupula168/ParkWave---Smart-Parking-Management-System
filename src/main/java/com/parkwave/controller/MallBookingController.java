@@ -28,6 +28,15 @@ public class MallBookingController {
         return mallBookingService.getUserBookings(userId);
     }
 
+    @GetMapping("/{bookingId}")
+    public MallBooking getBookingById(@PathVariable int bookingId) {
+        MallBooking booking = mallBookingService.getBookingById(bookingId);
+        if (booking == null) {
+            throw new RuntimeException("Booking not found");
+        }
+        return booking;
+    }
+
     @GetMapping("/user/{userId}/active")
     public List<MallBooking> getActiveUserBookings(@PathVariable int userId) {
         return mallBookingService.getActiveUserBookings(userId);

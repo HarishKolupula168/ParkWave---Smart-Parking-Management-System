@@ -1,133 +1,648 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>My Bookings</title>
-<style>
-body { font-family:Arial; background:#f4f6f8; padding:20px; }
-.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.back-btn { background:#3498db; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; text-decoration:none; }
-.back-btn:hover { background:#2980b9; }
-.booking-list { display:grid; gap:20px; }
-.booking-card { background:white; border-radius:8px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
-.booking-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
-.mall-name { font-size:18px; font-weight:bold; }
-.booking-status { padding:5px 10px; border-radius:4px; color:white; font-size:12px; }
-.status-active { background:#2ecc71; }
-.status-completed { background:#95a5a6; }
-.status-cancelled { background:#e74c3c; }
-.booking-details { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; }
-.detail-item { display:flex; flex-direction:column; }
-.detail-label { font-weight:bold; color:#666; margin-bottom:5px; }
-.detail-value { color:#333; }
-.action-buttons { display:flex; gap:10px; margin-top:15px; }
-.action-btn { background:#3498db; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; }
-.action-btn:hover { background:#2980b9; }
-.cancel-btn { background:#e74c3c; }
-.cancel-btn:hover { background:#c0392b; }
-.complete-btn { background:#2ecc71; }
-.complete-btn:hover { background:#27ae60; }
-.empty-state { text-align:center; padding:40px; color:#666; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings & Ticket Verification - ParkWave</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #ec4899;
+      --accent: #10b981;
+      --dark-bg: #090d16;
+      --glass-bg: rgba(17, 24, 39, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      position: relative;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    /* Glowing blur blobs */
+    .blob {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.35;
+      animation: float 12s infinite alternate ease-in-out;
+    }
+
+    .blob-1 {
+      background: var(--primary);
+      top: -100px;
+      left: -100px;
+    }
+
+    .blob-2 {
+      background: var(--secondary);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: 3s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 50px) scale(1.2); }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .header-nav h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 40%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--glass-border);
+      color: var(--text-main);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--accent) 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(244, 63, 94, 0.5);
+    }
+
+    /* Verification Search Bar Card */
+    .verification-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      margin-bottom: 40px;
+    }
+
+    .verification-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    .verification-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .search-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    /* Boarding Pass / Ticket Styling */
+    .ticket-pass {
+      background: linear-gradient(135deg, #1e2536 0%, #111625 100%);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-top: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .ticket-header {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 24px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .ticket-header::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background-image: radial-gradient(circle, transparent 8px, #1e2536 8px);
+      background-size: 24px 20px;
+    }
+
+    .ticket-header-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .ticket-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ticket-body {
+      padding: 40px 30px 30px 30px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+    }
+
+    .ticket-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .ticket-field h5 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .ticket-field p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    /* Barcode styled cleanly in CSS/SVGs */
+    .ticket-barcode-section {
+      border-left: 1px dashed rgba(255,255,255,0.1);
+      padding-left: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .barcode {
+      width: 130px;
+      height: 65px;
+      background: repeating-linear-gradient(
+        90deg,
+        white 0px,
+        white 2px,
+        transparent 2px,
+        transparent 6px,
+        white 6px,
+        white 7px,
+        transparent 7px,
+        transparent 11px
+      );
+      margin-bottom: 8px;
+    }
+
+    .ticket-number {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+    }
+
+    /* Bookings Grid list */
+    .bookings-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .booking-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .booking-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .booking-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .booking-card-mall {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-active { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-completed { background: rgba(156, 163, 175, 0.15); color: var(--text-muted); border: 1px solid rgba(156, 163, 175, 0.3); }
+    .status-cancelled { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .booking-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .booking-field h6 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .booking-field p {
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state a {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .header-nav {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .ticket-body {
+        grid-template-columns: 1fr;
+      }
+
+      .ticket-barcode-section {
+        border-left: none;
+        border-top: 1px dashed rgba(255,255,255,0.1);
+        padding-left: 0;
+        padding-top: 30px;
+      }
+
+      .search-group {
+        flex-direction: column;
+      }
+
+      .search-group .btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>My Parking Bookings</h1>
-  <a href="mall-parking.html" class="back-btn">Back to Parking</a>
-</div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-<div class="booking-list" id="bookingList"></div>
-
-<script>
-const userId = localStorage.getItem("userId");
-
-// Load user bookings
-fetch(`/api/mall-bookings/user/${userId}`)
-  .then(res => res.json())
-  .then(bookings => {
-    displayBookings(bookings);
-  });
-
-function displayBookings(bookings) {
-  const container = document.getElementById("bookingList");
-  
-  if (bookings.length === 0) {
-    container.innerHTML = '<div class="empty-state">No bookings found. <a href="mall-selection.html">Select a mall</a> to book a parking slot.</div>';
-    return;
-  }
-
-  container.innerHTML = bookings.map(booking => `
-    <div class="booking-card">
-      <div class="booking-header">
-        <div class="mall-name">${booking.mall.name}</div>
-        <div class="booking-status status-${booking.status.toLowerCase()}">${booking.status}</div>
-      </div>
-      
-      <div class="booking-details">
-        <div class="detail-item">
-          <div class="detail-label">Slot Number</div>
-          <div class="detail-value">${booking.parkingSlot.slotNumber}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Level</div>
-          <div class="detail-value">Level ${booking.parkingSlot.level}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Zone</div>
-          <div class="detail-value">${booking.parkingSlot.zone}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Booking Date</div>
-          <div class="detail-value">${booking.bookingDate}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Check-in Time</div>
-          <div class="detail-value">${booking.checkInTime || 'Not checked in'}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Check-out Time</div>
-          <div class="detail-value">${booking.checkOutTime || 'Not checked out'}</div>
-        </div>
-      </div>
-      
-      ${booking.status === 'ACTIVE' ? `
-        <div class="action-buttons">
-          <button class="action-btn complete-btn" onclick="completeBooking(${booking.id})">Complete Booking</button>
-          <button class="action-btn cancel-btn" onclick="cancelBooking(${booking.id})">Cancel Booking</button>
-        </div>
-      ` : ''}
+  <div class="container">
+    
+    <div class="header-nav">
+      <h1>My Bookings</h1>
+      <a href="mall-selection.html" class="btn btn-glass">← Back to Mall Selection</a>
     </div>
-  `).join('');
-}
 
-function completeBooking(bookingId) {
-  if (confirm('Are you sure you want to complete this booking?')) {
-    fetch(`/api/mall-bookings/complete/${bookingId}`, {
-      method: "POST"
-    })
-    .then(res => res.text())
-    .then(() => {
-      alert('Booking completed successfully!');
-      location.reload();
-    })
-    .catch(() => alert('Failed to complete booking'));
-  }
-}
+    <!-- Verification Card -->
+    <div class="verification-card">
+      <h3>Ticket Verification</h3>
+      <p>Enter your unique Booking ID to instantly retrieve and verify your digital parking pass from the server.</p>
+      <div class="search-group">
+        <input type="number" id="searchId" class="search-input" placeholder="Enter Booking ID (e.g. 1, 2, ...)" min="1">
+        <button class="btn btn-primary" onclick="verifyTicket()">Verify Ticket</button>
+      </div>
 
-function cancelBooking(bookingId) {
-  if (confirm('Are you sure you want to cancel this booking?')) {
-    fetch(`/api/mall-bookings/cancel/${bookingId}`, {
-      method: "POST"
-    })
-    .then(res => res.text())
-    .then(() => {
-      alert('Booking cancelled successfully!');
-      location.reload();
-    })
-    .catch(() => alert('Failed to cancel booking'));
-  }
-}
-</script>
+      <!-- Ticket Pass Display -->
+      <div class="ticket-pass" id="ticketPass">
+        <div class="ticket-header">
+          <div class="ticket-header-title" id="tMallName">MALL NAME</div>
+          <div class="ticket-badge" id="tStatus">ACTIVE</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-details">
+            <div class="ticket-field">
+              <h5>Booking ID</h5>
+              <p id="tBookingId">#123</p>
+            </div>
+            <div class="ticket-field">
+              <h5>Slot Number</h5>
+              <p id="tSlot">A-12</p>
+            </div>
+            <div class="ticket-field">
+              <h5>Level</h5>
+              <p id="tLevel">Floor 1</p>
+            </div>
+            <div class="ticket-field">
+              <h5>Zone</h5>
+              <p id="tZone">Zone B</p>
+            </div>
+            <div class="ticket-field">
+              <h5>Booking Date</h5>
+              <p id="tDate">2026-05-23</p>
+            </div>
+            <div class="ticket-field">
+              <h5>Check-in Time</h5>
+              <p id="tCheckIn">14:05</p>
+            </div>
+          </div>
+          <div class="ticket-barcode-section">
+            <div class="barcode"></div>
+            <div class="ticket-number" id="tBarcodeNo">TKT-000123</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User's own Bookings List -->
+    <div id="userBookingsSection">
+      <div class="bookings-title">
+        <span>📋</span> Your Booking History
+      </div>
+      <div class="booking-list" id="bookingList">
+        <div class="empty-state">Loading your booking history...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const userId = localStorage.getItem("userId");
+
+    // Hide booking history if no user is signed in (guest view)
+    if (!userId) {
+      document.getElementById("userBookingsSection").style.display = "none";
+    } else {
+      // Load user bookings
+      loadUserBookings();
+    }
+
+    function loadUserBookings() {
+      fetch(`/api/mall-bookings/user/${userId}`)
+        .then(res => res.json())
+        .then(bookings => {
+          displayBookings(bookings);
+        })
+        .catch(() => {
+          document.getElementById("bookingList").innerHTML = '<div class="empty-state">Failed to load booking history.</div>';
+        });
+    }
+
+    function displayBookings(bookings) {
+      const container = document.getElementById("bookingList");
+      
+      if (bookings.length === 0) {
+        container.innerHTML = '<div class="empty-state">No bookings found. <a href="mall-selection.html">Select a mall</a> to book a parking slot.</div>';
+        return;
+      }
+
+      container.innerHTML = bookings.map(booking => `
+        <div class="booking-card">
+          <div class="booking-card-header">
+            <div class="booking-card-mall">${booking.mall.name}</div>
+            <div class="status-badge status-${booking.status.toLowerCase()}">${booking.status}</div>
+          </div>
+          
+          <div class="booking-grid">
+            <div class="booking-field">
+              <h6>Booking ID</h6>
+              <p>#${booking.id}</p>
+            </div>
+            <div class="booking-field">
+              <h6>Slot Number</h6>
+              <p>${booking.parkingSlot.slotNumber}</p>
+            </div>
+            <div class="booking-field">
+              <h6>Level / Floor</h6>
+              <p>Level ${booking.parkingSlot.level}</p>
+            </div>
+            <div class="booking-field">
+              <h6>Zone Location</h6>
+              <p>${booking.parkingSlot.zone}</p>
+            </div>
+            <div class="booking-field">
+              <h6>Booking Date</h6>
+              <p>${booking.bookingDate}</p>
+            </div>
+            <div class="booking-field">
+              <h6>Check-in Time</h6>
+              <p>${booking.checkInTime || 'Not checked in'}</p>
+            </div>
+          </div>
+          
+          ${booking.status === 'ACTIVE' ? `
+            <div class="action-group">
+              <button class="btn btn-success" onclick="completeBooking(${booking.id})">Complete Booking</button>
+              <button class="btn btn-danger" onclick="cancelBooking(${booking.id})">Cancel Booking</button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function verifyTicket() {
+      const searchId = document.getElementById("searchId").value;
+      if (!searchId) {
+        alert("Please enter a valid Booking ID");
+        return;
+      }
+
+      fetch(`/api/mall-bookings/${searchId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Ticket not found");
+          return res.json();
+        })
+        .then(booking => {
+          document.getElementById("ticketPass").style.display = "block";
+          document.getElementById("tMallName").textContent = booking.mall.name;
+          document.getElementById("tStatus").textContent = booking.status;
+          document.getElementById("tStatus").className = `ticket-badge status-${booking.status.toLowerCase()}`;
+          document.getElementById("tBookingId").textContent = `#${booking.id}`;
+          document.getElementById("tSlot").textContent = booking.parkingSlot.slotNumber;
+          document.getElementById("tLevel").textContent = `Level ${booking.parkingSlot.level}`;
+          document.getElementById("tZone").textContent = booking.parkingSlot.zone;
+          document.getElementById("tDate").textContent = booking.bookingDate;
+          document.getElementById("tCheckIn").textContent = booking.checkInTime || 'Not checked in';
+          document.getElementById("tBarcodeNo").textContent = `TKT-${booking.id.toString().padStart(6, '0')}`;
+        })
+        .catch(err => {
+          alert("Ticket verification failed. Please check the Booking ID.");
+          document.getElementById("ticketPass").style.display = "none";
+        });
+    }
+
+    function completeBooking(bookingId) {
+      if (confirm('Are you sure you want to complete this booking?')) {
+        fetch(`/api/mall-bookings/complete/${bookingId}`, {
+          method: "POST"
+        })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          alert('Booking completed successfully!');
+          loadUserBookings();
+        })
+        .catch(() => alert('Failed to complete booking'));
+      }
+    }
+
+    function cancelBooking(bookingId) {
+      if (confirm('Are you sure you want to cancel this booking?')) {
+        fetch(`/api/mall-bookings/cancel/${bookingId}`, {
+          method: "POST"
+        })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          alert('Booking cancelled successfully!');
+          loadUserBookings();
+        })
+        .catch(() => alert('Failed to cancel booking'));
+      }
+    }
+  </script>
 
 </body>
 </html>

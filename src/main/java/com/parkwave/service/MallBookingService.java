@@ -52,6 +52,10 @@ public class MallBookingService {
         return mallBookingRepository.findByUserId(userId);
     }
 
+    public MallBooking getBookingById(int bookingId) {
+        return mallBookingRepository.findById(bookingId).orElse(null);
+    }
+
     public List<MallBooking> getMallBookings(int mallId) {
         return mallBookingRepository.findByMallId(mallId);
     }

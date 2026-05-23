@@ -27,7 +27,11 @@ public class AdminController {
     // Admin Authentication
     @PostMapping("/login")
     public Admin login(@RequestParam String username, @RequestParam String password) {
-        return adminService.authenticate(username, password);
+        Admin admin = adminService.authenticate(username, password);
+        if (admin == null) {
+            throw new RuntimeException("Invalid username or password");
+        }
+        return admin;
     }
 
     // Slot Management

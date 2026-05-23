@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>ParkWave - Premium Smart Parking</title>
-  <!-- Outfit & Plus Jakarta Sans Fonts -->
+  <title>User Profile - ParkWave</title>
+  <!-- Google Fonts & Lucide CDN -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
@@ -75,7 +74,6 @@
       background-color: #f0f2f5;
     }
 
-    /* Core Native Mobile-first Shell */
     .app-shell {
       width: 100%;
       max-width: 480px;
@@ -102,7 +100,6 @@
       border-bottom: 1px solid var(--card-border);
       z-index: 10;
       flex-shrink: 0;
-      transition: border-color 0.3s ease;
     }
 
     .app-header .logo {
@@ -144,15 +141,11 @@
       transition: background-color 0.2s ease;
     }
 
-    .theme-toggle:active {
-      background: var(--card-border);
-    }
-
     .app-content {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
-      padding-bottom: 92px; /* Bottom ribbon spacing */
+      padding-bottom: 92px;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -160,261 +153,210 @@
       display: none;
     }
 
-    /* Subheadings */
     .section-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      letter-spacing: -0.01em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .section-title span {
-      font-size: 0.8rem;
-      color: var(--accent);
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    /* Premium Mockup Search bar */
-    .search-mock {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 28px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      margin-bottom: 24px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-
-    html.light .search-mock {
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
-
-    .search-mock:active {
-      transform: scale(0.98);
-      border-color: var(--accent);
-    }
-
-    .search-mock span {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    /* Hero / Header greeting */
-    .greeting-container {
-      margin-bottom: 20px;
-    }
-
-    .greeting-container h2 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
-      line-height: 1.2;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    /* Profile identity section */
+    .profile-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .avatar-circle {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    html.light .avatar-circle {
+      background: #000000;
+    }
+
+    .profile-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
       margin-bottom: 4px;
     }
 
-    .greeting-container p {
-      font-size: 0.9rem;
+    .profile-email {
+      font-size: 0.85rem;
       color: var(--text-muted);
     }
 
-    /* Horizontal list slider for nearby parking spaces */
-    .nearby-slider {
-      display: flex;
+    /* Statistics panels */
+    .stats-panel-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 14px;
-      overflow-x: auto;
       margin-bottom: 24px;
-      padding-bottom: 8px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
     }
 
-    .nearby-slider::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nearby-card {
-      flex: 0 0 240px;
-      scroll-snap-align: start;
+    .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
       padding: 14px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
     }
 
-    .nearby-card:active {
-      transform: scale(0.97);
-    }
-
-    .nearby-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .nearby-name {
+    .stat-val {
       font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 140px;
-    }
-
-    .nearby-dist {
-      font-size: 0.75rem;
+      font-size: 1.6rem;
+      font-weight: 800;
       color: var(--accent);
-      background: var(--card-border);
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-weight: 600;
-    }
-
-    .nearby-slots {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .nearby-slots.high-availability {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    .quick-book-btn {
-      width: 100%;
-      background: var(--text-main);
-      color: var(--bg-color);
-      border: none;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    /* Recommended Areas card */
-    .reco-card {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .reco-icon {
-      width: 52px;
-      height: 52px;
-      background: var(--card-border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .reco-info {
-      flex: 1;
-    }
-
-    .reco-name {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
       margin-bottom: 2px;
     }
-
-    .reco-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 10px;
+    
+    html.light .stat-val {
+      color: #000000;
     }
 
-    .reco-rating {
-      color: #FFC107;
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
       font-weight: 600;
     }
 
-    /* Recent / Active booking card */
-    .active-session-card {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-      border: none;
-      color: #ffffff;
+    /* Group items options */
+    .menu-group {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
       margin-bottom: 24px;
+      box-shadow: var(--shadow);
     }
 
-    .active-session-card h4 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 6px;
+    .menu-item {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-    }
-
-    .active-session-card p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      margin-bottom: 12px;
-    }
-
-    .active-session-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-session {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #ffffff;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
+      padding: 16px;
+      border-bottom: 1px solid var(--card-border);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
       transition: background-color 0.2s ease;
     }
 
-    .btn-session:active {
-      background: rgba(255, 255, 255, 0.35);
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .menu-item:active {
+      background-color: var(--card-border);
+    }
+
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-item-left i {
+      color: var(--text-muted);
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-signout {
+      width: 100%;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-signout:active {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Guest CTA card */
+    .guest-cta-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .guest-cta-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .guest-cta-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .guest-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .guest-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .guest-btn-primary {
+      background: var(--text-main);
+      color: var(--bg-color);
+      border: none;
+    }
+
+    .guest-btn-secondary {
+      background: var(--card-border);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
     }
 
     /* Fixed Bottom Navigation Ribbon */
@@ -464,7 +406,6 @@
       color: #000000;
     }
 
-    /* Color blue if active and custom icon blue */
     .nav-item.active i {
       color: var(--accent);
       stroke: var(--accent);
@@ -503,13 +444,8 @@
       animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .toast-message.success {
-      border-color: var(--success);
-    }
-
-    .toast-message.error {
-      border-color: var(--danger);
-    }
+    .toast-message.success { border-color: var(--success); }
+    .toast-message.error { border-color: var(--danger); }
 
     @keyframes slideDown {
       0% { transform: translateY(-30px); opacity: 0; }
@@ -521,7 +457,7 @@
       100% { transform: translateY(-30px); opacity: 0; }
     }
 
-    /* Premium Bottom Sheet Confirmation Drawer */
+    /* Confirmation Modal Drawer bottom sheet */
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -602,28 +538,25 @@
 </head>
 <body>
 
-  <!-- Core App Shell Container -->
   <div class="app-shell">
     
-    <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Bottom Sheet Modal overlay -->
-    <div class="modal-overlay" id="confirm-overlay">
-      <div class="modal-sheet" id="confirm-sheet">
+    <div class="modal-overlay" id="custom-sheet-overlay">
+      <div class="modal-sheet" id="custom-sheet">
         <div class="sheet-handle"></div>
-        <div class="sheet-title" id="sheet-title">Confirm Action</div>
-        <div class="sheet-text" id="sheet-text">Are you sure you want to proceed?</div>
+        <div class="sheet-title" id="custom-sheet-title">Confirm Action</div>
+        <div class="sheet-text" id="custom-sheet-text">Are you sure you want to proceed?</div>
         <div class="sheet-actions">
-          <button class="sheet-btn sheet-btn-secondary" onclick="closeConfirmModal(false)">Cancel</button>
+          <button class="sheet-btn sheet-btn-secondary" onclick="handleSheetAction(false)">Cancel</button>
           <button class="sheet-btn sheet-btn-primary" id="sheet-confirm-btn">Confirm</button>
         </div>
       </div>
     </div>
 
-    <!-- App Header Nav Bar -->
     <header class="app-header">
-      <div class="logo">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
         <span class="logo-car">
           <i data-lucide="car" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>
         </span>
@@ -635,118 +568,71 @@
       </button>
     </header>
 
-    <!-- Scrollable content -->
     <main class="app-content">
-      
-      <!-- User greeting -->
-      <div class="greeting-container">
-        <h2 id="greeting-title">Hello, Guest</h2>
-        <p>Ready to reserve your parking spot?</p>
-      </div>
+      <div class="section-title">My Account</div>
 
-      <!-- Quick Session card (Active Bookings) -->
-      <div class="card active-session-card" id="active-session-banner" style="display: none;">
-        <h4>
-          <i data-lucide="clock" style="width: 18px; height: 18px;"></i>
-          Active Parking Reservation
-        </h4>
-        <p id="active-session-text">You have an active slot reservation. Tap below to manage details or check out.</p>
-        <div class="active-session-actions">
-          <a href="mall-bookings.html" class="btn-session">
-            View Ticket
-            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+      <!-- Logged in view -->
+      <div id="user-profile-view" style="display: none;">
+        <div class="profile-hero">
+          <div class="avatar-circle" id="profile-avatar">U</div>
+          <div class="profile-name" id="profile-name-text">Registered User</div>
+          <div class="profile-email" id="profile-email-text">user@parkwave.com</div>
+        </div>
+
+        <div class="stats-panel-row">
+          <div class="stat-card">
+            <div class="stat-val" id="stat-active-locks">0</div>
+            <div class="stat-lbl">Active locks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="stat-total-reservations">0</div>
+            <div class="stat-lbl">Total bookings</div>
+          </div>
+        </div>
+
+        <div class="menu-group">
+          <a href="mall-bookings.html" class="menu-item">
+            <div class="menu-item-left">
+              <i data-lucide="calendar"></i>
+              <span>Booking History</span>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px; height:16px; opacity:0.5;"></i>
+          </a>
+          <a href="mall-selection.html" class="menu-item">
+            <div class="menu-item-left">
+              <i data-lucide="search"></i>
+              <span>Browse Malls</span>
+            </div>
+            <i data-lucide="chevron-right" style="width:16px; height:16px; opacity:0.5;"></i>
           </a>
         </div>
+
+        <button class="btn-signout" onclick="signOutAction()">
+          <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+          Sign Out
+        </button>
       </div>
 
-      <!-- Mockup Location Search Input Box -->
-      <div class="search-mock" onclick="window.location.href='mall-selection.html'">
-        <i data-lucide="search" style="color: var(--accent); width: 18px; height: 18px;"></i>
-        <span>Where are you heading today?</span>
-      </div>
-
-      <!-- Nearby spaces horizontal scroll -->
-      <div class="section-title">
-        Nearby Parking
-        <span onclick="window.location.href='mall-selection.html'">See All</span>
-      </div>
-      <div class="nearby-slider">
-        <div class="nearby-card" onclick="quickSelectMall(1)">
-          <div class="nearby-header">
-            <div class="nearby-name">Nexus Mall</div>
-            <div class="nearby-dist">0.8 km</div>
+      <!-- Guest view -->
+      <div id="guest-profile-view" style="display: none;">
+        <div class="guest-cta-card">
+          <div class="avatar-circle" style="background: var(--card-border); color: var(--text-muted); margin: 0 auto 16px auto;">
+            <i data-lucide="user" style="width: 36px; height: 36px; stroke-width: 1.5;"></i>
           </div>
-          <div class="nearby-slots high-availability">
-            <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
-            <span>34 Slots Available</span>
+          <h3>Welcome, Guest</h3>
+          <p>Sign in to unlock interactive floor parking slots booking, receipt logs, and digital boarding pass verification.</p>
+          <div class="guest-actions">
+            <a href="login.html" class="guest-btn guest-btn-primary">Sign In</a>
+            <a href="register.html" class="guest-btn guest-btn-secondary">Create Account</a>
           </div>
-          <button class="quick-book-btn">
-            Quick Book
-            <i data-lucide="zap" style="width: 12px; height: 12px;"></i>
-          </button>
         </div>
-
-        <div class="nearby-card" onclick="quickSelectMall(2)">
-          <div class="nearby-header">
-            <div class="nearby-name">Phoenix Market</div>
-            <div class="nearby-dist">1.6 km</div>
-          </div>
-          <div class="nearby-slots">
-            <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
-            <span>12 Slots Available</span>
-          </div>
-          <button class="quick-book-btn">
-            Quick Book
-            <i data-lucide="zap" style="width: 12px; height: 12px;"></i>
-          </button>
-        </div>
-
-        <div class="nearby-card" onclick="quickSelectMall(3)">
-          <div class="nearby-header">
-            <div class="nearby-name">Forum Falcon</div>
-            <div class="nearby-dist">2.3 km</div>
-          </div>
-          <div class="nearby-slots high-availability">
-            <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
-            <span>48 Slots Available</span>
-          </div>
-          <button class="quick-book-btn">
-            Quick Book
-            <i data-lucide="zap" style="width: 12px; height: 12px;"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Recommended Areas section -->
-      <div class="section-title">Recommended Spot</div>
-      <div class="card" onclick="window.location.href='mall-selection.html'" style="cursor: pointer;">
-        <div class="reco-card">
-          <div class="reco-icon">
-            <i data-lucide="star" style="width: 24px; height: 24px;"></i>
-          </div>
-          <div class="reco-info">
-            <div class="reco-name">Nexus Mall Premium Zone</div>
-            <div class="reco-meta">
-              <span class="reco-rating">★ 4.9</span>
-              <span>• 350m away</span>
-              <span>• P1 level VIP</span>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" style="color: var(--text-muted); width: 18px; height: 18px;"></i>
-        </div>
-      </div>
-
-      <!-- Safety Banner description -->
-      <div class="card" style="border-left: 4px solid var(--accent); padding-left: 14px; margin-top: 10px;">
-        <h5 style="margin-bottom: 4px; font-weight: 700; font-family: 'Outfit';">100% Secure Slots</h5>
-        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Every reservation locks the physical space instantly. Dynamic IoT locking prevents unauthorized parking.</p>
       </div>
 
     </main>
 
-    <!-- Bottom Navigation ribbon -->
+    <!-- Bottom Ribbon Navigation -->
     <nav class="bottom-nav">
-      <a href="index.html" class="nav-item active" id="nav-home">
+      <a href="index.html" class="nav-item" id="nav-home">
         <i data-lucide="home"></i>
         <span>Home</span>
       </a>
@@ -762,7 +648,7 @@
         <i data-lucide="calendar"></i>
         <span>History</span>
       </a>
-      <a href="profile.html" class="nav-item" id="nav-profile">
+      <a href="profile.html" class="nav-item active" id="nav-profile">
         <i data-lucide="user"></i>
         <span>Profile</span>
       </a>
@@ -771,7 +657,10 @@
   </div>
 
   <script>
-    // Theme Manager
+    const userId = localStorage.getItem("userId");
+    const email = localStorage.getItem("userEmail");
+
+    // Theme managers
     function initTheme() {
       const savedTheme = localStorage.getItem("theme") || "dark";
       const htmlEl = document.documentElement;
@@ -810,55 +699,95 @@
       }
     }
 
-    // Dynamic session check
+    // Dynamic session checking
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
 
-      const email = localStorage.getItem("userEmail");
-      const userId = localStorage.getItem("userId");
-
-      if (email) {
-        // Parse nickname/name from email
+      if (userId && email) {
+        document.getElementById("user-profile-view").style.display = "block";
+        document.getElementById("guest-profile-view").style.display = "none";
+        
+        // Populate profile text details
         const nick = email.split('@')[0];
-        document.getElementById("greeting-title").textContent = `Hello, ${nick.charAt(0).toUpperCase() + nick.slice(1)}`;
-      }
+        document.getElementById("profile-name-text").textContent = nick.charAt(0).toUpperCase() + nick.slice(1);
+        document.getElementById("profile-email-text").textContent = email;
+        document.getElementById("profile-avatar").textContent = nick.charAt(0).toUpperCase();
 
-      // Check active booking slots from API
-      if (userId) {
-        fetch(`/api/mall-bookings/user/${userId}/active`)
+        // Fetch statistics dynamically
+        fetch(`/api/mall-bookings/user/${userId}`)
           .then(res => res.json())
-          .then(activeBookings => {
-            if (activeBookings && activeBookings.length > 0) {
-              document.getElementById("active-session-banner").style.display = "block";
-              document.getElementById("active-session-text").textContent = `You have an active lock on Slot ${activeBookings[0].parkingSlot.slotNumber} at ${activeBookings[0].mall.name}.`;
-            }
+          .then(bookings => {
+            document.getElementById("stat-total-reservations").textContent = bookings.length;
+            const activeCount = bookings.filter(b => b.status === "ACTIVE").length;
+            document.getElementById("stat-active-locks").textContent = activeCount;
           })
           .catch(() => {});
       } else {
-        // Guest mode banner check
-        const cachedIds = JSON.parse(localStorage.getItem("guestActiveBookingIds") || "[]");
-        if (cachedIds.length > 0) {
-          document.getElementById("active-session-banner").style.display = "block";
-          document.getElementById("active-session-text").textContent = `You have ${cachedIds.length} active guest slots. View History to manage them.`;
-        }
+        document.getElementById("user-profile-view").style.display = "none";
+        document.getElementById("guest-profile-view").style.display = "block";
       }
     });
 
-    // Quick selection of mall card
-    function quickSelectMall(mallId) {
-      localStorage.setItem("selectedMallId", mallId);
-      window.location.href = "mall-parking.html";
+    // Sign out action backed by bottom-sheet
+    function signOutAction() {
+      showConfirmDialog("Confirm Sign Out", "Are you sure you want to log out of your ParkWave profile session?")
+        .then(agreed => {
+          if (!agreed) return;
+
+          fetch("/api/users/logout", { method: "POST" })
+            .then(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              showToast("Signed out successfully!");
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 1200);
+            })
+            .catch(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              window.location.href = "index.html";
+            });
+        });
     }
 
-    // Verification for book slots click
+    // Reusable Custom prompt sheets
+    let sheetResolver = null;
+    function showConfirmDialog(title, text) {
+      document.getElementById("custom-sheet-title").textContent = title;
+      document.getElementById("custom-sheet-text").textContent = text;
+      
+      const overlay = document.getElementById("custom-sheet-overlay");
+      const sheet = document.getElementById("custom-sheet");
+      
+      overlay.style.display = "flex";
+      setTimeout(() => sheet.classList.add("open"), 10);
+
+      return new Promise((resolve) => {
+        sheetResolver = resolve;
+      });
+    }
+
+    function handleSheetAction(confirmed) {
+      const sheet = document.getElementById("custom-sheet");
+      const overlay = document.getElementById("custom-sheet-overlay");
+      
+      sheet.classList.remove("open");
+      setTimeout(() => {
+        overlay.style.display = "none";
+        if (sheetResolver) sheetResolver(confirmed);
+      }, 300);
+    }
+
+    document.getElementById("sheet-confirm-btn").onclick = () => handleSheetAction(true);
+
     function verifyMallBookingNav(event) {
       const selectedMall = localStorage.getItem("selectedMallId");
       if (!selectedMall) {
         event.preventDefault();
         showToast("Please select a parking mall from Search first!", "error");
-        setTimeout(() => {
-          window.location.href = "mall-selection.html";
-        }, 1200);
       }
     }
 
@@ -883,38 +812,6 @@
         setTimeout(() => toast.remove(), 300);
       }, 3500);
     }
-
-    // Custom Bottom Sheet Modals (Replaces native prompt/confirm)
-    let confirmResolver = null;
-    function customConfirm(title, text) {
-      document.getElementById("sheet-title").textContent = title;
-      document.getElementById("sheet-text").textContent = text;
-      
-      const overlay = document.getElementById("confirm-overlay");
-      const sheet = document.getElementById("confirm-sheet");
-      
-      overlay.style.display = "flex";
-      setTimeout(() => {
-        sheet.classList.add("open");
-      }, 10);
-
-      return new Promise((resolve) => {
-        confirmResolver = resolve;
-      });
-    }
-
-    function closeConfirmModal(accepted) {
-      const sheet = document.getElementById("confirm-sheet");
-      const overlay = document.getElementById("confirm-overlay");
-      
-      sheet.classList.remove("open");
-      setTimeout(() => {
-        overlay.style.display = "none";
-        if (confirmResolver) confirmResolver(accepted);
-      }, 300);
-    }
-
-    document.getElementById("sheet-confirm-btn").onclick = () => closeConfirmModal(true);
   </script>
 </body>
 </html>

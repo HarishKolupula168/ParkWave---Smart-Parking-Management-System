@@ -2,27 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Sign In - ParkWave</title>
+  <!-- Google Fonts & Lucide CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-
     :root {
       /* Theme variables - DEFAULT DARK (Uber Pure Black) */
       --bg-color: #000000;
       --card-bg: #121212;
       --card-border: rgba(255, 255, 255, 0.08);
       --text-main: #ffffff;
-      --text-muted: #afafaf;
-      --accent: #10b981;
-      --primary: #ffffff;
-      --primary-light: #e5e5e5;
+      --text-muted: #a0a0a0;
+      --accent: #276EF1; /* Uber Royal Blue */
+      --accent-light: #5B92FF;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
       
-      /* Shared constants */
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --dark-bg: #000000;
-      --glass-bg: rgba(18, 18, 18, 0.8);
-      --secondary: #ec4899;
+      --ribbon-bg: #121212;
+      --ribbon-border: rgba(255, 255, 255, 0.08);
+      
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     html.light {
@@ -32,112 +38,136 @@
       --card-border: rgba(0, 0, 0, 0.08);
       --text-main: #000000;
       --text-muted: #5f5f5f;
-      --primary: #000000;
-      --primary-light: #1f1f1f;
+      --accent: #000000;
+      --accent-light: #333333;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.08);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.08);
       
-      --glass-border: rgba(0, 0, 0, 0.08);
-      --dark-bg: #ffffff;
-      --glass-bg: rgba(246, 246, 246, 0.8);
-      --secondary: #db2777;
+      --ribbon-bg: #ffffff;
+      --ribbon-border: rgba(0, 0, 0, 0.08);
+      
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-color);
+      background-color: #0c0d12;
+      font-family: var(--font-family);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: background-color 0.3s ease;
       overflow: hidden;
-      position: relative;
-      padding: 20px;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Glowing blur blobs */
-    .blob {
-      position: absolute;
-      width: 350px;
-      height: 350px;
-      border-radius: 50%;
-      filter: blur(100px);
-      z-index: -1;
-      opacity: 0.35;
-      animation: float 10s infinite alternate ease-in-out;
+    html.light body {
+      background-color: #f0f2f5;
     }
 
-    .blob-1 {
-      background: var(--primary);
-      top: -50px;
-      left: -50px;
-    }
-
-    .blob-2 {
-      background: var(--secondary);
-      bottom: -80px;
-      right: -50px;
-      animation-delay: 3s;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(30px, 40px) scale(1.15); }
-    }
-
-    .login-container {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(20px);
-      padding: 40px 30px;
-      border-radius: 24px;
+    .app-shell {
       width: 100%;
-      max-width: 420px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+      max-width: 480px;
+      height: 100vh;
+      position: relative;
+      background-color: var(--bg-color);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    html.light .app-shell {
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .app-header {
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--card-border);
       z-index: 10;
-      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
     }
 
-    @keyframes slideIn {
-      0% { transform: translateY(30px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    .app-header .logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .logo-badge {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+    .logo-car {
+      background: var(--accent);
+      color: #ffffff;
+      padding: 6px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      margin: 0 auto 16px auto;
-      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+      transition: background-color 0.3s ease;
     }
 
-    .header h2 {
+    html.light .logo-car {
+      background: #000000;
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      padding-top: 40px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Auth card forms */
+    .auth-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
-      color: white;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      letter-spacing: -0.03em;
+      text-align: center;
     }
 
-    .header p {
+    .auth-subtitle {
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 32px;
     }
 
     .form-group {
@@ -146,8 +176,8 @@
 
     .form-group label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 8px;
       text-transform: uppercase;
@@ -160,208 +190,230 @@
 
     .form-input {
       width: 100%;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 14px 16px;
-      color: white;
+      color: var(--text-main);
       font-family: inherit;
       font-size: 0.95rem;
-      transition: all 0.3s ease;
+      font-weight: 500;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .form-input:focus {
       outline: none;
-      border-color: var(--primary-light);
-      background: rgba(255, 255, 255, 0.07);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(39, 110, 241, 0.15);
     }
 
     .form-input::placeholder {
-      color: rgba(255, 255, 255, 0.25);
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    /* Error indicator box */
+    .error-alert-box {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+      display: none;
     }
 
     .btn-submit {
       width: 100%;
-      background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
-      color: white;
+      background: var(--text-main);
+      color: var(--bg-color);
       border: none;
       padding: 14px;
       border-radius: 12px;
+      font-size: 0.95rem;
       font-weight: 700;
-      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
-      margin-top: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-    }
-
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+      transition: opacity 0.2s ease;
+      margin-top: 10px;
     }
 
     .btn-submit:active {
-      transform: translateY(0);
+      opacity: 0.85;
     }
 
-    .footer-links {
+    .auth-footer {
       margin-top: 24px;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
     }
 
-    .footer-links a {
-      color: var(--primary-light);
+    .auth-footer a {
+      color: var(--accent);
       text-decoration: none;
-      font-weight: 600;
-      transition: color 0.2s ease;
+      font-weight: 700;
+    }
+    
+    html.light .auth-footer a {
+      color: #000000;
     }
 
-    /* Fixed Floating Theme Toggle Button */
-    .theme-toggle-btn {
-      position: fixed;
-      top: 24px;
-      right: 40px;
-      z-index: 1001;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      cursor: pointer;
+    .back-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      transition: all 0.2s ease;
-    }
-    .theme-toggle-btn:hover {
-      transform: scale(1.05);
-    }
-    @media (max-width: 767px) {
-      .theme-toggle-btn {
-        top: 16px;
-        right: 20px;
-      }
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-top: 20px;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-
-  <div class="login-container">
-    <div class="header">
-      <div class="logo-badge">🚗</div>
-      <h2>Welcome Back</h2>
-      <p>Sign in to access your parking dashboard</p>
-    </div>
-
-    <form onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <div class="input-wrapper">
-          <input type="email" id="email" class="form-input" placeholder="name@domain.com" required autocomplete="email">
-        </div>
+  <div class="app-shell">
+    
+    <header class="app-header">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+        <span class="logo-car">
+          <i data-lucide="car" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>
+        </span>
+        ParkWave
       </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
-        </div>
-      </div>
-
-      <!-- Error Message Box -->
-      <div id="error-box" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: #f87171; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 15px; margin-top: 5px;"></div>
-
-      <button type="submit" class="btn-submit">
-        Sign In ➔
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <i data-lucide="sun" id="theme-icon-sun" style="display: none;"></i>
+        <i data-lucide="moon" id="theme-icon-moon"></i>
       </button>
-    </form>
+    </header>
 
-    <div class="footer-links">
-      Don't have an account? <a href="register.html">Sign up</a>
-      <div style="margin-top: 12px;">
-        <a href="index.html" style="font-size: 0.85rem; color: var(--text-muted);">← Back to Landing Page</a>
+    <main class="app-content">
+      <div class="auth-title">Welcome Back</div>
+      <div class="auth-subtitle">Sign in to lock secure floor slots seamlessly</div>
+
+      <div class="error-alert-box" id="error-box"></div>
+
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <input type="email" id="email" class="form-input" placeholder="name@domain.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Sign In
+          <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="register.html">Sign Up</a>
+        
+        <a href="index.html" class="back-btn">
+          <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+          Back to Homepage
+        </a>
       </div>
-    </div>
+    </main>
+
   </div>
 
-  <!-- Fixed Floating Theme Toggle Button -->
-  <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">🌓</button>
-
   <script>
-    // Theme Manager
+    // Theme triggers
     function initTheme() {
       const savedTheme = localStorage.getItem("theme") || "dark";
+      const htmlEl = document.documentElement;
+      const sunIcon = document.getElementById("theme-icon-sun");
+      const moonIcon = document.getElementById("theme-icon-moon");
+
       if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
+        htmlEl.classList.add("light");
+        if (sunIcon) sunIcon.style.display = "block";
+        if (moonIcon) moonIcon.style.display = "none";
       } else {
-        document.documentElement.classList.remove("light");
+        htmlEl.classList.remove("light");
+        if (sunIcon) sunIcon.style.display = "none";
+        if (moonIcon) moonIcon.style.display = "block";
       }
     }
     initTheme();
 
     function toggleTheme() {
-      if (document.documentElement.classList.contains("light")) {
-        document.documentElement.classList.remove("light");
+      const htmlEl = document.documentElement;
+      const sunIcon = document.getElementById("theme-icon-sun");
+      const moonIcon = document.getElementById("theme-icon-moon");
+
+      if (htmlEl.classList.contains("light")) {
+        htmlEl.classList.remove("light");
         localStorage.setItem("theme", "dark");
+        if (sunIcon) sunIcon.style.display = "none";
+        if (moonIcon) moonIcon.style.display = "block";
       } else {
-        document.documentElement.classList.add("light");
+        htmlEl.classList.add("light");
         localStorage.setItem("theme", "light");
+        if (sunIcon) sunIcon.style.display = "block";
+        if (moonIcon) moonIcon.style.display = "none";
       }
     }
 
-    function showError(message) {
-      const errorBox = document.getElementById("error-box");
-      if (errorBox) {
-        errorBox.textContent = message;
-        errorBox.style.display = "block";
-      }
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+    });
+
+    function showError(msg) {
+      const box = document.getElementById("error-box");
+      box.textContent = msg;
+      box.style.display = "block";
     }
 
-    function handleLogin(event) {
+    // Login submit action
+    function handleLoginSubmit(event) {
       event.preventDefault();
       const emailInput = document.getElementById("email").value;
       const passwordInput = document.getElementById("password").value;
-
-      const errorBox = document.getElementById("error-box");
-      if (errorBox) errorBox.style.display = "none";
+      const box = document.getElementById("error-box");
+      
+      box.style.display = "none";
 
       fetch("/api/users/login-with-id", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              email: emailInput,
-              password: passwordInput
-          })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailInput,
+          password: passwordInput
+        })
       })
       .then(res => {
-          if (!res.ok) throw new Error("Invalid credentials");
-          return res.json();
+        if (!res.ok) throw new Error("Invalid username or password");
+        return res.json();
       })
       .then(user => {
-          if (user) {
-              localStorage.setItem("userEmail", user.email);
-              localStorage.setItem("userId", user.id);
-              window.location.href = "mall-selection.html";
-          } else {
-              showError("Invalid email or password");
-          }
+        if (user) {
+          localStorage.setItem("userEmail", user.email);
+          localStorage.setItem("userId", user.id);
+          window.location.href = "profile.html";
+        } else {
+          showError("Invalid email or password");
+        }
       })
       .catch(() => showError("Invalid email or password"));
     }
   </script>
-
 </body>
 </html>

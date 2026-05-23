@@ -1,284 +1,622 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Select Mall</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Select Destination - ParkWave</title>
+  <!-- Google Fonts & Lucide CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      /* Theme variables - DEFAULT DARK (Uber Pure Black) */
+      --bg-color: #000000;
+      --card-bg: #121212;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #ffffff;
+      --text-muted: #a0a0a0;
+      --accent: #276EF1; /* Uber Royal Blue */
+      --accent-light: #5B92FF;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      
+      --ribbon-bg: #121212;
+      --ribbon-border: rgba(255, 255, 255, 0.08);
+      
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    html.light {
+      /* LIGHT THEME */
+      --bg-color: #ffffff;
+      --card-bg: #f6f6f6;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --text-main: #000000;
+      --text-muted: #5f5f5f;
+      --accent: #000000;
+      --accent-light: #333333;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.08);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.08);
+      
+      --ribbon-bg: #ffffff;
+      --ribbon-border: rgba(0, 0, 0, 0.08);
+      
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
 
-body { 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-  min-height: 100vh;
-  padding: 20px;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+    body {
+      background-color: #0c0d12;
+      font-family: var(--font-family);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      overflow: hidden;
+    }
 
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-  color: white;
-}
+    html.light body {
+      background-color: #f0f2f5;
+    }
 
-.header h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+    .app-shell {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      position: relative;
+      background-color: var(--bg-color);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
-.header p {
-  font-size: 1.125rem;
-  opacity: 0.9;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
+    html.light .app-shell {
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
+    }
 
-.mall-grid { 
-  display:grid; 
-  grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); 
-  gap:24px; 
-  margin:20px 0; 
-}
+    .app-header {
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--card-border);
+      z-index: 10;
+      flex-shrink: 0;
+      transition: border-color 0.3s ease;
+    }
 
-.mall-card { 
-  background: rgba(255, 255, 255, 0.95); 
-  backdrop-filter: blur(10px);
-  border-radius:16px; 
-  padding:24px; 
-  box-shadow:0 10px 30px rgba(0,0,0,0.1); 
-  cursor:pointer; 
-  transition:all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-}
+    .app-header .logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.mall-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-}
+    .logo-car {
+      background: var(--accent);
+      color: #ffffff;
+      padding: 6px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+    }
 
-.mall-card:hover { 
-  transform:translateY(-8px); 
-  box-shadow:0 20px 40px rgba(0,0,0,0.15);
-}
+    html.light .logo-car {
+      background: #000000;
+    }
 
-.mall-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
+    .theme-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+    }
 
-.mall-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
+    .theme-toggle:active {
+      background: var(--card-border);
+    }
 
-.mall-name { 
-  font-size:1.5rem; 
-  font-weight:600; 
-  margin-bottom:8px; 
-  color: #1e293b;
-}
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      padding-bottom: 92px;
+      -webkit-overflow-scrolling: touch;
+    }
 
-.mall-location {
-  color: #64748b;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+    .app-content::-webkit-scrollbar {
+      display: none;
+    }
 
-.mall-info { 
-  color:#64748b; 
-  margin-bottom:20px; 
-  line-height: 1.6;
-}
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
 
-.mall-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
 
-.stat-item {
-  text-align: center;
-  padding: 12px;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 8px;
-}
+    /* Uber-style Real Real-time Filter Input */
+    .search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
 
-.stat-value {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #667eea;
-}
+    .search-input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px 14px 44px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: var(--shadow);
+    }
 
-.stat-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 4px;
-}
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(39, 110, 241, 0.15);
+    }
 
-.select-btn { 
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-  color:white; 
-  border:none; 
-  padding:12px 24px; 
-  border-radius:8px; 
-  cursor:pointer; 
-  font-weight: 600;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  width: 100%;
-}
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
 
-.select-btn:hover { 
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
+    /* Uber Selection List cards style */
+    .mall-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.loading {
-  text-align: center;
-  color: white;
-  font-size: 1.125rem;
-  padding: 40px;
-}
+    .mall-select-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
 
-.back-link {
-  text-align: center;
-  margin-top: 40px;
-}
+    .mall-select-card:active {
+      transform: scale(0.97);
+      border-color: var(--accent);
+    }
 
-.back-link a {
-  color: white;
-  text-decoration: none;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
+    .mall-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
 
-.back-link a:hover {
-  opacity: 1;
-}
+    .mall-info {
+      flex: 1;
+      min-width: 0;
+    }
 
-@media (max-width: 768px) {
-  .mall-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .header h2 {
-    font-size: 2rem;
-  }
-  
-  .mall-stats {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+    .mall-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2px;
+    }
+
+    .mall-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mall-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mall-meta-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .mall-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--card-border);
+      font-weight: 600;
+    }
+
+    .mall-tag.spots-left {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .mall-tag.distance {
+      color: var(--accent);
+    }
+
+    .arrow-icon {
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .empty-search-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Fixed Bottom Navigation Ribbon */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background-color: var(--ribbon-bg);
+      border-top: 1px solid var(--ribbon-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.25);
+      padding-bottom: env(safe-area-inset-bottom);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 600;
+      width: 20%;
+      height: 100%;
+      gap: 4px;
+      transition: color 0.2s ease, transform 0.15s ease;
+    }
+
+    .nav-item i {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+    }
+
+    .nav-item.active {
+      color: var(--text-main);
+    }
+
+    html.light .nav-item.active {
+      color: #000000;
+    }
+
+    .nav-item.active i {
+      color: var(--accent);
+      stroke: var(--accent);
+    }
+
+    .nav-item:active {
+      transform: scale(0.92);
+    }
+
+    /* Toast Notification Container */
+    .toast-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10000;
+      pointer-events: none;
+    }
+
+    .toast-message {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+      animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .toast-message.success { border-color: var(--success); }
+    .toast-message.error { border-color: var(--danger); }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-30px); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="header">
-  <div id="userNav" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:12px 20px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.1); width:100%;">
-    <span id="userStatus" style="font-size:0.9rem; font-weight:600; color:white;">Browsing as Guest</span>
-    <div id="navActions" style="display:flex; gap:10px; align-items:center;">
-      <a href="index.html" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Home</a>
-      <button onclick="handleLogout()" id="logoutBtn" style="display:none; background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">Sign Out</button>
-      <a href="login.html" id="signInBtn" style="background:linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Sign In</a>
-    </div>
+  <!-- Native Mobile Container -->
+  <div class="app-shell">
+    
+    <div class="toast-container" id="toast-container"></div>
+
+    <header class="app-header">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+        <span class="logo-car">
+          <i data-lucide="car" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>
+        </span>
+        ParkWave
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <i data-lucide="sun" id="theme-icon-sun" style="display: none;"></i>
+        <i data-lucide="moon" id="theme-icon-moon"></i>
+      </button>
+    </header>
+
+    <main class="app-content">
+      <div class="section-title">Mall Selection</div>
+      <div class="section-subtitle">Pick a shopping mall structure to view available slot maps</div>
+
+      <!-- Real-time filtering Search Input -->
+      <div class="search-container">
+        <i data-lucide="search" class="search-icon" style="width: 18px; height: 18px;"></i>
+        <input type="text" id="mall-filter-input" class="search-input" placeholder="Search mall name or location..." oninput="filterMalls()">
+      </div>
+
+      <!-- Mall Cards List -->
+      <div class="mall-list" id="mall-list-container">
+        <!-- Rendered dynamically -->
+        <div style="text-align: center; color: var(--text-muted); padding: 40px;">Loading parking structures...</div>
+      </div>
+    </main>
+
+    <!-- Navigation ribbon -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item" id="nav-home">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+      </a>
+      <a href="mall-selection.html" class="nav-item active" id="nav-search">
+        <i data-lucide="search"></i>
+        <span>Search</span>
+      </a>
+      <a href="mall-parking.html" class="nav-item" id="nav-book" onclick="verifyMallBookingNav(event)">
+        <i data-lucide="map-pin"></i>
+        <span>Book Slots</span>
+      </a>
+      <a href="mall-bookings.html" class="nav-item" id="nav-history">
+        <i data-lucide="calendar"></i>
+        <span>History</span>
+      </a>
+      <a href="profile.html" class="nav-item" id="nav-profile">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+
   </div>
-  <h2>Select Shopping Mall</h2>
-  <p>Choose a mall to view available parking slots</p>
-</div>
 
-<div class="mall-grid" id="mallList"></div>
+  <script>
+    let localMallsData = [];
 
-<script>
-fetch("/api/malls/random")
-  .then(res => res.json())
-  .then(malls => {
-    const container = document.getElementById("mallList");
-    container.innerHTML = "";
+    // Theme Switcher
+    function initTheme() {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      const htmlEl = document.documentElement;
+      const sunIcon = document.getElementById("theme-icon-sun");
+      const moonIcon = document.getElementById("theme-icon-moon");
 
-    malls.forEach(mall => {
-      const div = document.createElement("div");
-      div.className = "mall-card";
-      
-      div.innerHTML = `
-        <div class="mall-name">${mall.name}</div>
-        <div class="mall-info">
-          <div>Location: ${mall.location}</div>
-          <div>Total Slots: ${mall.totalSlots}</div>
-          <div>Levels: ${mall.parkingLevels}</div>
-          <div>${mall.description}</div>
-        </div>
-        <button class="select-btn" onclick="selectMall(${mall.id})">Select Mall</button>
-      `;
+      if (savedTheme === "light") {
+        htmlEl.classList.add("light");
+        if (sunIcon) sunIcon.style.display = "block";
+        if (moonIcon) moonIcon.style.display = "none";
+      } else {
+        htmlEl.classList.remove("light");
+        if (sunIcon) sunIcon.style.display = "none";
+        if (moonIcon) moonIcon.style.display = "block";
+      }
+    }
+    initTheme();
 
-      container.appendChild(div);
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const sunIcon = document.getElementById("theme-icon-sun");
+      const moonIcon = document.getElementById("theme-icon-moon");
+
+      if (htmlEl.classList.contains("light")) {
+        htmlEl.classList.remove("light");
+        localStorage.setItem("theme", "dark");
+        if (sunIcon) sunIcon.style.display = "none";
+        if (moonIcon) moonIcon.style.display = "block";
+        showToast("Switched to Premium Dark Mode");
+      } else {
+        htmlEl.classList.add("light");
+        localStorage.setItem("theme", "light");
+        if (sunIcon) sunIcon.style.display = "block";
+        if (moonIcon) moonIcon.style.display = "none";
+        showToast("Switched to Clean Light Mode");
+      }
+    }
+
+    // Load malls from dynamic endpoint
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+
+      fetch("/api/malls/random")
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
+        .then(malls => {
+          localMallsData = malls;
+          renderMallsList(malls);
+        })
+        .catch(() => {
+          document.getElementById("mall-list-container").innerHTML = 
+            `<div class="empty-search-state">Failed to retrieve mall lists. Please reload.</div>`;
+        });
     });
-  });
 
-function selectMall(mallId) {
-  localStorage.setItem("selectedMallId", mallId);
-  window.location.href = "mall-parking.html";
-}
+    // Render list based on matches
+    function renderMallsList(malls) {
+      const container = document.getElementById("mall-list-container");
+      if (malls.length === 0) {
+        container.innerHTML = `<div class="empty-search-state">No matching malls found. Try a different query.</div>`;
+        return;
+      }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const email = localStorage.getItem("userEmail");
-  if (email) {
-    document.getElementById("userStatus").innerHTML = `Signed in as: <strong style="color: #818cf8;">${email}</strong>`;
-    document.getElementById("logoutBtn").style.display = "block";
-    document.getElementById("signInBtn").style.display = "none";
-  }
-});
+      container.innerHTML = malls.map((mall, index) => {
+        // Mock dynamic distance and rating values
+        const dist = (0.5 + (index * 0.7)).toFixed(1);
+        const slotsLeft = mall.totalSlots - 12; // simulated available count
+        return `
+          <div class="mall-select-card" onclick="selectMall(${mall.id})">
+            <div class="mall-avatar">
+              <i data-lucide="building" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div class="mall-info">
+              <div class="mall-title-row">
+                <div class="mall-name">${mall.name}</div>
+              </div>
+              <div class="mall-desc">${mall.description || mall.location}</div>
+              <div class="mall-meta-row">
+                <span class="mall-tag spots-left">${slotsLeft > 0 ? slotsLeft : 0} spots left</span>
+                <span class="mall-tag distance">${dist} km away</span>
+                <span>• ${mall.parkingLevels} levels</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="arrow-icon" style="width: 16px; height: 16px;"></i>
+          </div>
+        `;
+      }).join('');
+      
+      lucide.createIcons();
+    }
 
-function handleLogout() {
-  if (confirm("Are you sure you want to sign out?")) {
-    fetch("/api/users/logout", { method: "POST" })
-      .then(() => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("selectedMallId");
-        alert("Signed out successfully!");
-        window.location.href = "index.html";
-      })
-      .catch(() => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("selectedMallId");
-        window.location.href = "index.html";
-      });
-  }
-}
-</script>
+    // Filtering logic
+    function filterMalls() {
+      const input = document.getElementById("mall-filter-input").value.toLowerCase().trim();
+      const filtered = localMallsData.filter(mall => 
+        mall.name.toLowerCase().includes(input) || 
+        mall.location.toLowerCase().includes(input) ||
+        (mall.description && mall.description.toLowerCase().includes(input))
+      );
+      renderMallsList(filtered);
+    }
 
+    // Action on selection
+    function selectMall(mallId) {
+      localStorage.setItem("selectedMallId", mallId);
+      window.location.href = "mall-parking.html";
+    }
+
+    function verifyMallBookingNav(event) {
+      const selectedMall = localStorage.getItem("selectedMallId");
+      if (!selectedMall) {
+        event.preventDefault();
+        showToast("Please select a parking mall from Search first!", "error");
+      }
+    }
+
+    // Custom Toast Engine
+    function showToast(message, type = "success") {
+      let container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast-message ${type}`;
+      
+      const iconName = type === 'success' ? 'check-circle' : 'alert-circle';
+      const color = type === 'success' ? 'var(--success)' : 'var(--danger)';
+      
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" style="color: ${color}; width: 18px; height: 18px; flex-shrink:0;"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.style.animation = "slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
 </body>
 </html>

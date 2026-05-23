@@ -621,6 +621,154 @@
 
   </div>
 
+  <!-- Footer -->
+  <style>
+    .dev-footer {
+      border-top: 1px solid var(--glass-border);
+      padding: 60px 40px;
+      background: rgba(9, 13, 22, 0.95);
+      position: relative;
+      z-index: 10;
+      margin-top: 80px;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .footer-brand {
+      text-align: left;
+    }
+    .footer-brand h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 40%, var(--primary-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 500px;
+    }
+    .footer-dev-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .footer-dev-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .footer-dev-title span {
+      font-size: 1.4rem;
+    }
+    .footer-dev-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-dev-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .footer-dev-item strong {
+      color: white;
+    }
+    .footer-dev-item a {
+      color: var(--primary-light);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-dev-item a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+    .footer-copyright {
+      grid-column: 1 / -1;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 24px;
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    @media (max-width: 768px) {
+      .dev-footer {
+        padding: 40px 20px;
+        margin-top: 40px;
+      }
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      .footer-brand {
+        text-align: center;
+      }
+      .footer-brand p {
+        margin: 0 auto;
+      }
+    }
+  </style>
+  <footer class="dev-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h4>ParkWave Smart Parking</h4>
+        <p>ParkWave is a premium, real-time smart parking booking system designed to reduce traffic congestion and parking hassle in busy metropolitan malls. Explore our layouts, lock your bookings, and view live slots instantly.</p>
+      </div>
+      <div class="footer-dev-card">
+        <div class="footer-dev-title">
+          <span>👨‍💻</span> Developer Profile
+        </div>
+        <div class="footer-dev-details">
+          <div class="footer-dev-item">
+            <span>👤</span>
+            <div>Name: <strong>Kolupula Harish</strong></div>
+          </div>
+          <div class="footer-dev-item">
+            <span>📧</span>
+            <div>Email: <a href="mailto:harishkolupula9@gmail.com">harishkolupula9@gmail.com</a></div>
+          </div>
+          <div class="footer-dev-item">
+            <span>📞</span>
+            <div>Mobile: <a href="tel:+919866552397">9866552397</a></div>
+          </div>
+          <div class="footer-dev-item">
+            <span>🐙</span>
+            <div>GitHub: <a href="https://github.com/HarishKolupula168" target="_blank" rel="noopener noreferrer">github.com/HarishKolupula168</a></div>
+          </div>
+          <div class="footer-dev-item">
+            <span>💼</span>
+            <div>LinkedIn: <a href="https://www.linkedin.com/in/kolupula-harish-41a3a6330" target="_blank" rel="noopener noreferrer">Kolupula Harish</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <p>&copy; 2026 ParkWave. Specially developed for ultimate parking convenience. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
   <script>
     const userId = localStorage.getItem("userId");
 

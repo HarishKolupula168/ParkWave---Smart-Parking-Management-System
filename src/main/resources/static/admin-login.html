@@ -1,72 +1,289 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Admin Login - ParkWave</title>
-<style>
-body { font-family:Arial; background:#f4f6f8; padding:20px; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-.login-container { background:white; padding:40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); width:400px; }
-h2 { text-align:center; color:#333; margin-bottom:30px; }
-.form-group { margin-bottom:20px; }
-label { display:block; margin-bottom:5px; color:#666; }
-input { width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
-.btn { width:100%; padding:12px; background:#e74c3c; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
-.btn:hover { background:#c0392b; }
-.back-link { text-align:center; margin-top:20px; }
-.back-link a { color:#3498db; text-decoration:none; }
-.error { color:#e74c3c; text-align:center; margin-bottom:10px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - ParkWave Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #ef4444;
+      --primary-light: #f87171;
+      --secondary: #f97316;
+      --dark-bg: #090d16;
+      --glass-bg: rgba(17, 24, 39, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* Glowing blur blobs - customized for admin secure vibe */
+    .blob {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: -1;
+      opacity: 0.35;
+      animation: float 10s infinite alternate ease-in-out;
+    }
+
+    .blob-1 {
+      background: var(--primary);
+      top: -50px;
+      left: -50px;
+    }
+
+    .blob-2 {
+      background: var(--secondary);
+      bottom: -80px;
+      right: -50px;
+      animation-delay: 3s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 40px) scale(1.15); }
+    }
+
+    .login-container {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 40px 30px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .error-box {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 12px;
+      border-radius: 12px;
+      color: #f87171;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      display: none;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .footer-links {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links a {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: white;
+    }
+  </style>
 </head>
 <body>
 
-<div class="login-container">
-<h2>Admin Login</h2>
-<div id="error" class="error" style="display:none;"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-<form onsubmit="login(event)">
-<div class="form-group">
-<label>Username:</label>
-<input type="text" id="username" required>
-</div>
+  <div class="login-container">
+    <div class="header">
+      <div class="logo-badge">🛡️</div>
+      <h2>Admin Portal</h2>
+      <p>Sign in to access management console</p>
+    </div>
 
-<div class="form-group">
-<label>Password:</label>
-<input type="password" id="password" required>
-</div>
+    <div id="errorBox" class="error-box"></div>
 
-<button type="submit" class="btn">Login</button>
-</form>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" class="form-input" placeholder="admin" required autocomplete="username">
+      </div>
 
-<div class="back-link">
-<a href="index.html">← Back to Home</a>
-</div>
-</div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+      </div>
 
-<script>
-function login(event) {
-  event.preventDefault();
-  
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  
-  fetch("/api/admin/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `username=${username}&password=${password}`
-  })
-  .then(res => {
-    if (!res.ok) throw new Error();
-    return res.json();
-  })
-  .then(admin => {
-    localStorage.setItem("adminUser", JSON.stringify(admin));
-    window.location.href = "admin-dashboard.html";
-  })
-  .catch(() => {
-    document.getElementById("error").style.display = "block";
-    document.getElementById("error").textContent = "Invalid username or password";
-  });
-}
-</script>
+      <button type="submit" class="btn-submit">
+        Secure Login ➔
+      </button>
+    </form>
+
+    <div class="footer-links">
+      <a href="index.html" style="font-size: 0.85rem; color: var(--text-muted);">← Back to Landing Page</a>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const usernameInput = document.getElementById("username").value;
+      const passwordInput = document.getElementById("password").value;
+      const errorBox = document.getElementById("errorBox");
+
+      errorBox.style.display = "none";
+      
+      fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `username=${encodeURIComponent(usernameInput)}&password=${encodeURIComponent(passwordInput)}`
+      })
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(admin => {
+        localStorage.setItem("adminUser", JSON.stringify(admin));
+        window.location.href = "admin-dashboard.html";
+      })
+      .catch(() => {
+        errorBox.textContent = "Invalid administrator username or password";
+        errorBox.style.display = "block";
+      });
+    }
+  </script>
 
 </body>
 </html>

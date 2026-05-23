@@ -42,7 +42,7 @@ body { font-family:Arial; background:#f4f6f8; padding:20px; }
 const userId = localStorage.getItem("userId");
 
 // Load user bookings
-fetch(`http://localhost:8080/api/mall-bookings/user/${userId}`)
+fetch(`/api/mall-bookings/user/${userId}`)
   .then(res => res.json())
   .then(bookings => {
     displayBookings(bookings);
@@ -102,7 +102,7 @@ function displayBookings(bookings) {
 
 function completeBooking(bookingId) {
   if (confirm('Are you sure you want to complete this booking?')) {
-    fetch(`http://localhost:8080/api/mall-bookings/complete/${bookingId}`, {
+    fetch(`/api/mall-bookings/complete/${bookingId}`, {
       method: "POST"
     })
     .then(res => res.text())
@@ -116,7 +116,7 @@ function completeBooking(bookingId) {
 
 function cancelBooking(bookingId) {
   if (confirm('Are you sure you want to cancel this booking?')) {
-    fetch(`http://localhost:8080/api/mall-bookings/cancel/${bookingId}`, {
+    fetch(`/api/mall-bookings/cancel/${bookingId}`, {
       method: "POST"
     })
     .then(res => res.text())

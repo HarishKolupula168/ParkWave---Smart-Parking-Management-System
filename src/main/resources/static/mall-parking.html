@@ -466,7 +466,7 @@ let currentLevel = 1;
 let mallData = null;
 
 // Load mall information
-fetch(`http://localhost:8080/api/malls/${mallId}`)
+fetch(`/api/malls/${mallId}`)
   .then(res => res.json())
   .then(mall => {
     mallData = mall;
@@ -506,7 +506,7 @@ function switchLevel(level) {
 }
 
 function loadParkingSlots(level) {
-  fetch(`http://localhost:8080/api/mall-parking/slots/${mallId}/level/${level}`)
+  fetch(`/api/mall-parking/slots/${mallId}/level/${level}`)
     .then(res => res.json())
     .then(slots => {
       const container = document.getElementById("parkingGrid");
@@ -578,7 +578,7 @@ function bookSlot(slotId) {
     if (!guestName) return;
     
     // Create guest booking without userId
-    fetch(`http://localhost:8080/api/mall-bookings/guest?guestName=${encodeURIComponent(guestName)}&mallId=${mallId}&slotId=${slotId}`, {
+    fetch(`/api/mall-bookings/guest?guestName=${encodeURIComponent(guestName)}&mallId=${mallId}&slotId=${slotId}`, {
       method: "POST"
     })
     .then(res => {
@@ -592,7 +592,7 @@ function bookSlot(slotId) {
     .catch(() => alert("Booking failed - slot may already be booked"));
   } else {
     // Regular user booking
-    fetch(`http://localhost:8080/api/mall-bookings?userId=${userId}&mallId=${mallId}&slotId=${slotId}`, {
+    fetch(`/api/mall-bookings?userId=${userId}&mallId=${mallId}&slotId=${slotId}`, {
       method: "POST"
     })
     .then(res => {

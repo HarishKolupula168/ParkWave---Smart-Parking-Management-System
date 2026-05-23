@@ -21,7 +21,7 @@ button { background:#3498db; color:white; border:none; }
 
 <script>
 function login() {
-    fetch("http://localhost:8080/api/users/login-with-id", {
+    fetch("/api/users/login-with-id", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

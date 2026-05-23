@@ -213,7 +213,7 @@ body {
 <div class="mall-grid" id="mallList"></div>
 
 <script>
-fetch("http://localhost:8080/api/malls/random")
+fetch("/api/malls/random")
   .then(res => res.json())
   .then(malls => {
     const container = document.getElementById("mallList");

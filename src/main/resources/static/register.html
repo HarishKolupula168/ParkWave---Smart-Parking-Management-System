@@ -21,8 +21,8 @@ button { background:#2ecc71; color:white; border:none; }
 </div>
 
 <script>
-function register(){
- fetch("http://localhost:8080/api/users/register",{
+ function register(){
+  fetch("/api/users/register",{
   method:"POST",
   headers:{ "Content-Type":"application/json" },
   body:JSON.stringify({

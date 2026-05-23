@@ -278,7 +278,10 @@
         <input type="password" id="password" class="form-input" placeholder="••••••••" required>
       </div>
 
-      <button type="submit" class="btn-submit">
+      <!-- Inline Error / Success Message Box -->
+      <div id="msg-box" style="display: none; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; text-align: center; margin-bottom: 15px; margin-top: 5px;"></div>
+
+      <button type="submit" class="btn-submit" id="submit-btn">
         Create Account ➔
       </button>
     </form>
@@ -316,11 +319,33 @@
       }
     }
 
+    function showMsg(message, type) {
+      const box = document.getElementById("msg-box");
+      if (!box) return;
+      box.textContent = message;
+      if (type === "error") {
+        box.style.background = "rgba(239, 68, 68, 0.1)";
+        box.style.border = "1px solid #ef4444";
+        box.style.color = "#f87171";
+      } else {
+        box.style.background = "rgba(16, 185, 129, 0.1)";
+        box.style.border = "1px solid #10b981";
+        box.style.color = "#34d399";
+      }
+      box.style.display = "block";
+    }
+
     function handleRegister(event) {
       event.preventDefault();
       const nameInput = document.getElementById("name").value;
       const emailInput = document.getElementById("email").value;
       const passwordInput = document.getElementById("password").value;
+      const submitBtn = document.getElementById("submit-btn");
+
+      // Hide old message, disable button
+      const box = document.getElementById("msg-box");
+      if (box) box.style.display = "none";
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Creating Account..."; }
 
       fetch("/api/users/register", {
           method: "POST",
@@ -333,10 +358,14 @@
       })
       .then(res => {
           if (!res.ok) throw new Error("Registration failed");
-          alert("Registration successful!");
-          window.location.href = "login.html";
+          // Show brief success feedback then redirect
+          showMsg("Account created! Redirecting to sign in...", "success");
+          setTimeout(() => { window.location.href = "login.html"; }, 1200);
       })
-      .catch(() => alert("Registration failed"));
+      .catch(() => {
+          showMsg("Registration failed. Email may already be in use.", "error");
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Create Account ➔"; }
+      });
     }
   </script>
 

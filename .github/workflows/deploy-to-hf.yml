@@ -21,4 +21,4 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://HarishKolupula168:$HF_TOKEN@huggingface.co/spaces/HarishKolupula168/parkwave main
+          git push --force https://HarishKolupula168:$HF_TOKEN@huggingface.co/spaces/HarishKolupula168/ParkWave main

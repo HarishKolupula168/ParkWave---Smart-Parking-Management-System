@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Interactive Parking Map - ParkWave</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -490,29 +490,31 @@
     }
 
     .vertical-road {
-      background: #111827;
-      width: 24px;
-      border-radius: 6px;
+      background: #1f2937;
+      border-radius: 8px;
       position: relative;
-      grid-row: span 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
     }
 
     .vertical-road::before {
       content: '';
       position: absolute;
       left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 2px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
       background: repeating-linear-gradient(
         0deg,
         #f59e0b 0px,
-        #f59e0b 10px,
-        transparent 10px,
-        transparent 20px
+        #f59e0b 8px,
+        transparent 8px,
+        transparent 16px
       );
       transform: translateX(-50%);
-      opacity: 0.6;
+      opacity: 0.7;
     }
 
     /* PREMIUM CUSTOM TOAST NOTIFICATIONS */
@@ -1116,39 +1118,66 @@
       syncSessionAndLoad();
     });
 
-    // Sync bookings locally and pull active ones
+    // Sync bookings locally and pull active ones - DECOUPLED so slot load never blocked
     function syncSessionAndLoad() {
-      // 1. Fetch user or guest active bookings to flag them as "Locked by Me"
-      let fetchUrl = userId ? `/api/mall-bookings/user/${userId}/active` : `/api/mall-bookings/mall/${mallId}`;
-      
-      fetch(fetchUrl)
-        .then(res => res.json())
+      console.log("[ParkWave] syncSessionAndLoad - mallId:", mallId, "userId:", userId);
+
+      if (!mallId || mallId === "null") {
+        showToast("No mall selected. Redirecting...", "error");
+        setTimeout(() => window.location.href = "mall-selection.html", 2000);
+        return;
+      }
+
+      // Step 1: Fetch active bookings (non-blocking - don't block slots if this fails)
+      let bookingFetchUrl = userId
+        ? `/api/mall-bookings/user/${userId}/active`
+        : `/api/mall-bookings/mall/${mallId}`;
+
+      const bookingPromise = fetch(bookingFetchUrl)
+        .then(res => res.ok ? res.json() : [])
         .then(data => {
           if (userId) {
-            myActiveBookings = data;
+            myActiveBookings = Array.isArray(data) ? data : [];
           } else {
-            // Guest mode - filter by locally cached active IDs
             const cachedIds = JSON.parse(localStorage.getItem("guestActiveBookingIds") || "[]");
-            myActiveBookings = data.filter(b => b.status === "ACTIVE" && cachedIds.includes(b.id));
+            myActiveBookings = Array.isArray(data)
+              ? data.filter(b => b.status === "ACTIVE" && cachedIds.includes(b.id))
+              : [];
           }
-          
-          // 2. Load Mall details
-          return fetch(`/api/malls/${mallId}`);
+          console.log("[ParkWave] Active bookings loaded:", myActiveBookings.length);
         })
-        .then(res => res.json())
+        .catch(err => {
+          console.warn("[ParkWave] Booking sync failed (non-fatal):", err);
+          myActiveBookings = [];
+        });
+
+      // Step 2: Fetch mall data (independent)
+      const mallPromise = fetch(`/api/malls/${mallId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Mall fetch failed: " + res.status);
+          return res.json();
+        })
         .then(mall => {
           mallData = mall;
           document.getElementById("mallName").textContent = mall.name;
-          document.getElementById("mallDetails").textContent = 
+          document.getElementById("mallDetails").textContent =
             `${mall.location} | Total Slots: ${mall.totalSlots} | Floors: ${mall.parkingLevels}`;
-          
-          // Generate level tabs
           createLevelTabs(mall.parkingLevels);
-          
-          // Initial map load
+          console.log("[ParkWave] Mall loaded:", mall.name);
+          return mall;
+        });
+
+      // Wait for BOTH, then load slots (even if bookings failed, slots still load)
+      Promise.all([bookingPromise, mallPromise])
+        .then(() => {
           loadParkingSlots(currentLevel);
         })
-        .catch(() => showToast("Failed to load map data. Please reload.", "error"));
+        .catch(err => {
+          console.error("[ParkWave] Critical load error:", err);
+          showToast("Failed to load mall data. Please reload.", "error");
+          // Still try to load slots even if mall details failed
+          loadParkingSlots(currentLevel);
+        });
     }
 
     function createLevelTabs(levels) {
@@ -1171,11 +1200,30 @@
 
     // STATIC LOAD - ONLY TOGGLES CLASSES ON REDRAW
     function loadParkingSlots(level) {
+      const container = document.getElementById("parkingGrid");
+      container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);font-size:0.9rem;">Loading slots...</div>`;
+
+      console.log("[ParkWave] Loading slots for mallId:", mallId, "level:", level);
+
+      if (!mallId || mallId === "null") {
+        container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:#f87171;font-size:0.9rem;">⚠ No mall selected. <a href="mall-selection.html" style="color:var(--accent)">Select a mall</a></div>`;
+        return;
+      }
+
       fetch(`/api/mall-parking/slots/${mallId}/level/${level}`)
-        .then(res => res.json())
+        .then(res => {
+          console.log("[ParkWave] Slots API response status:", res.status);
+          if (!res.ok) throw new Error("Slots API returned " + res.status);
+          return res.json();
+        })
         .then(slots => {
-          const container = document.getElementById("parkingGrid");
+          console.log("[ParkWave] Slots received:", slots.length, slots);
           container.innerHTML = "";
+
+          if (!slots || slots.length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No slots found for this floor.</div>`;
+            return;
+          }
 
           const slotsPerRow = 9;
           const totalRows = Math.ceil(slots.length / slotsPerRow);
@@ -1195,7 +1243,7 @@
               const div = document.createElement("div");
               
               // Determine if slot is locked by current user
-              const activeBooking = myActiveBookings.find(b => b.parkingSlot.id === slot.id && b.status === "ACTIVE");
+              const activeBooking = myActiveBookings.find(b => b.parkingSlot && b.parkingSlot.id === slot.id && b.status === "ACTIVE");
               
               let statusClass = "available";
               let statusLabel = "Available";
@@ -1214,7 +1262,7 @@
               div.innerHTML = `
                 <div class="slot-num">${slot.slotNumber}</div>
                 <div class="slot-state">${statusLabel}</div>
-                <div class="slot-zone-tag">${slot.zone}</div>
+                <div class="slot-zone-tag">${slot.zone || 'Z'}</div>
               `;
 
               // Dynamically configure static toggle clicks
@@ -1231,7 +1279,7 @@
 
               container.appendChild(div);
 
-              // Inject vertical layout dividers
+              // Inject vertical aisle dividers after slot 3 and slot 6
               const colInRow = (i - startIdx + 1);
               if (colInRow === 3 || colInRow === 6) {
                 const verticalRoad = document.createElement("div");
@@ -1240,6 +1288,11 @@
               }
             }
           }
+        })
+        .catch(err => {
+          console.error("[ParkWave] Failed to load slots:", err);
+          container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#f87171;">⚠ Could not load parking slots. Check your connection or <a href="javascript:location.reload()" style="color:var(--accent)">reload</a>.</div>`;
+          showToast("Failed to load parking slots. " + err.message, "error");
         });
     }
 

@@ -1,3 +1,12 @@
+---
+title: ParkWave
+emoji: 🚗
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # ParkWave - Multi-Mall Parking Booking System
 
 A comprehensive parking management system for shopping malls with real-time slot booking and interactive maps.

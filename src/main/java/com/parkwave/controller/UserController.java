@@ -56,4 +56,9 @@ public class UserController {
         request.getPassword()
         );
     }
+
+    @PostMapping("/logout")
+    public String logout() {
+        return "Logged out successfully";
+    }
 }

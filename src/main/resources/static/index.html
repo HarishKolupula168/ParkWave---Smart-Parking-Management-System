@@ -664,5 +664,69 @@
     <p>&copy; 2026 ParkWave Smart Parking Solutions. All rights reserved.</p>
   </footer>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (email) {
+        // 1. Update Hero Tag
+        const tag = document.querySelector(".hero-tag");
+        if (tag) {
+          tag.innerHTML = `✓ Active Session: ${email}`;
+          tag.style.background = "rgba(16, 185, 129, 0.15)";
+          tag.style.borderColor = "rgba(16, 185, 129, 0.4)";
+          tag.style.color = "var(--accent)";
+        }
+
+        // 2. Update Header Navigation Links
+        const headerNav = document.querySelector("header .nav-links");
+        if (headerNav) {
+          headerNav.innerHTML = `
+            <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Signed in as <strong>${email}</strong></span>
+            <a href="mall-selection.html" class="btn btn-primary">Browse Malls</a>
+            <button onclick="logoutUser()" class="btn btn-glass">Sign Out</button>
+          `;
+        }
+
+        // 3. Update Hero Buttons
+        const heroButtons = document.querySelector(".hero-content .nav-links");
+        if (heroButtons) {
+          heroButtons.innerHTML = `
+            <a href="mall-selection.html" class="btn btn-primary" style="padding: 16px 36px; font-size: 1.05rem;">Book Parking Slot Now</a>
+            <button onclick="logoutUser()" class="btn btn-glass" style="padding: 16px 36px; font-size: 1.05rem;">Sign Out</button>
+          `;
+        }
+
+        // 4. Update Mobile Bottom Actions
+        const mobileBottom = document.querySelector(".mobile-bottom-actions");
+        if (mobileBottom) {
+          mobileBottom.innerHTML = `
+            <a href="mall-selection.html" class="btn btn-primary">Book Now</a>
+            <button onclick="logoutUser()" class="btn btn-glass">Sign Out</button>
+          `;
+        }
+      }
+    });
+
+    function logoutUser() {
+      if (confirm("Are you sure you want to sign out?")) {
+        fetch("/api/users/logout", { method: "POST" })
+          .then(() => {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("selectedMallId");
+            alert("Signed out successfully!");
+            window.location.reload();
+          })
+          .catch(() => {
+            // Fallback in case of offline / network issue
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("selectedMallId");
+            window.location.reload();
+          });
+      }
+    }
+  </script>
+
 </body>
 </html>

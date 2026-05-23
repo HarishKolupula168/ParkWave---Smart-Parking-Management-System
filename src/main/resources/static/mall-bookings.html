@@ -443,9 +443,19 @@
 
   <div class="container">
     
-    <div class="header-nav">
-      <h1>My Bookings</h1>
-      <a href="mall-selection.html" class="btn btn-glass">← Back to Mall Selection</a>
+    <div class="header-nav" style="flex-direction: column; gap: 20px; align-items: stretch; width: 100%;">
+      <div id="userNav" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:12px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); width:100%;">
+        <span id="userStatus" style="font-size:0.9rem; font-weight:600; color:white;">Browsing as Guest</span>
+        <div id="navActions" style="display:flex; gap:10px; align-items:center;">
+          <a href="index.html" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Home</a>
+          <button onclick="handleLogout()" id="logoutBtn" style="display:none; background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">Sign Out</button>
+          <a href="login.html" id="signInBtn" style="background:linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Sign In</a>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 16px;">
+        <h1 style="margin: 0;">My Bookings</h1>
+        <a href="mall-selection.html" class="btn btn-glass">← Back to Mall Selection</a>
+      </div>
     </div>
 
     <!-- Verification Card -->
@@ -640,6 +650,34 @@
           loadUserBookings();
         })
         .catch(() => alert('Failed to cancel booking'));
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (email) {
+        document.getElementById("userStatus").innerHTML = `Signed in as: <strong style="color: #818cf8;">${email}</strong>`;
+        document.getElementById("logoutBtn").style.display = "block";
+        document.getElementById("signInBtn").style.display = "none";
+      }
+    });
+
+    function handleLogout() {
+      if (confirm("Are you sure you want to sign out?")) {
+        fetch("/api/users/logout", { method: "POST" })
+          .then(() => {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("selectedMallId");
+            alert("Signed out successfully!");
+            window.location.href = "index.html";
+          })
+          .catch(() => {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("selectedMallId");
+            window.location.href = "index.html";
+          });
       }
     }
   </script>

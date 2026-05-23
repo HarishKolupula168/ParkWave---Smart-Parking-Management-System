@@ -2,43 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ParkWave - Premium Parking Management System</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
     :root {
-      /* Theme variables - DEFAULT DARK (Uber Pure Black) */
-      --bg-color: #000000;
-      --card-bg: #121212;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text-main: #ffffff;
-      --text-muted: #afafaf;
-      --accent: #10b981;
-      --primary: #ffffff;
-      --primary-light: #e5e5e5;
-      
-      /* Shared constants */
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --dark-bg: #000000;
-      --glass-bg: rgba(18, 18, 18, 0.8);
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
       --secondary: #ec4899;
-    }
-
-    html.light {
-      /* LIGHT THEME */
-      --bg-color: #ffffff;
-      --card-bg: #f6f6f6;
-      --card-border: rgba(0, 0, 0, 0.08);
-      --text-main: #000000;
-      --text-muted: #5f5f5f;
-      --primary: #000000;
-      --primary-light: #1f1f1f;
-      
-      --glass-border: rgba(0, 0, 0, 0.08);
-      --dark-bg: #ffffff;
-      --glass-bg: rgba(246, 246, 246, 0.8);
-      --secondary: #db2777;
+      --accent: #10b981;
+      --dark-bg: #090d16;
+      --glass-bg: rgba(17, 24, 39, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
     }
 
     * {
@@ -49,12 +27,11 @@
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-color);
+      background-color: var(--dark-bg);
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* Dynamic glowing background blobs */
@@ -512,153 +489,6 @@
       }
     }
 
-    /* Uber Style Bottom Navigation Bar for Mobile */
-    .uber-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 65px;
-      background: var(--card-bg);
-      border-top: 1px solid var(--card-border);
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 999;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .uber-bottom-nav .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-      gap: 3px;
-    }
-    .uber-bottom-nav .nav-item:hover, .uber-bottom-nav .nav-item.active {
-      color: var(--text-main);
-    }
-    .uber-bottom-nav .nav-icon {
-      font-size: 1.35rem;
-    }
-    .uber-bottom-nav .nav-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    /* Fixed Floating Theme Toggle Button */
-    .theme-toggle-btn {
-      position: fixed;
-      top: 24px;
-      right: 40px;
-      z-index: 1001;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      transition: all 0.2s ease;
-    }
-    .theme-toggle-btn:hover {
-      transform: scale(1.05);
-    }
-
-    /* Account Details Overlay Modal */
-    .account-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 1002;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      backdrop-filter: blur(8px);
-    }
-    .account-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 30px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      animation: accountSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes accountSlideUp {
-      0% { transform: translateY(50px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-    .account-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-    .account-header h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem;
-      color: var(--text-main);
-    }
-    .close-overlay-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.8rem;
-      cursor: pointer;
-    }
-    .account-detail-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 18px;
-    }
-    .account-detail-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .account-detail-val {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .account-btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    @media (max-width: 767px) {
-      .theme-toggle-btn {
-        top: 16px;
-        right: 20px;
-      }
-      .uber-bottom-nav {
-        display: grid;
-      }
-      body {
-        padding-bottom: 75px !important;
-      }
-      .mobile-bottom-actions {
-        display: none !important;
-      }
-    }
-
     /* Mobile View Adaptations */
     @media (max-width: 767px) {
       header {
@@ -830,248 +660,11 @@
   </div>
 
   <!-- Footer -->
-  <style>
-    .dev-footer {
-      border-top: 1px solid var(--glass-border);
-      padding: 60px 40px;
-      background: rgba(9, 13, 22, 0.95);
-      position: relative;
-      z-index: 10;
-      margin-top: 80px;
-    }
-    .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 40px;
-      align-items: center;
-    }
-    .footer-brand {
-      text-align: left;
-    }
-    .footer-brand h4 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff 40%, var(--primary-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
-    }
-    .footer-brand p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      max-width: 500px;
-    }
-    .footer-dev-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 24px;
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    .footer-dev-title {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .footer-dev-title span {
-      font-size: 1.4rem;
-    }
-    .footer-dev-details {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .footer-dev-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    .footer-dev-item strong {
-      color: white;
-    }
-    .footer-dev-item a {
-      color: var(--primary-light);
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .footer-dev-item a:hover {
-      color: white;
-      text-decoration: underline;
-    }
-    .footer-copyright {
-      grid-column: 1 / -1;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 24px;
-      margin-top: 24px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    @media (max-width: 768px) {
-      .dev-footer {
-        padding: 40px 20px;
-        margin-top: 40px;
-      }
-      .footer-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-      .footer-brand {
-        text-align: center;
-      }
-      .footer-brand p {
-        margin: 0 auto;
-      }
-    }
-  </style>
-  <footer class="dev-footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <h4>ParkWave Smart Parking</h4>
-        <p>ParkWave is a premium, real-time smart parking booking system designed to reduce traffic congestion and parking hassle in busy metropolitan malls. Explore our layouts, lock your bookings, and view live slots instantly.</p>
-      </div>
-      <div class="footer-dev-card">
-        <div class="footer-dev-title">
-          <span>👨‍💻</span> Developer Profile
-        </div>
-        <div class="footer-dev-details">
-          <div class="footer-dev-item">
-            <span>👤</span>
-            <div>Name: <strong>Kolupula Harish</strong></div>
-          </div>
-          <div class="footer-dev-item">
-            <span>📧</span>
-            <div>Email: <a href="mailto:harishkolupula9@gmail.com">harishkolupula9@gmail.com</a></div>
-          </div>
-          <div class="footer-dev-item">
-            <span>📞</span>
-            <div>Mobile: <a href="tel:+919866552397">9866552397</a></div>
-          </div>
-          <div class="footer-dev-item">
-            <span>🐙</span>
-            <div>GitHub: <a href="https://github.com/HarishKolupula168" target="_blank" rel="noopener noreferrer">github.com/HarishKolupula168</a></div>
-          </div>
-          <div class="footer-dev-item">
-            <span>💼</span>
-            <div>LinkedIn: <a href="https://www.linkedin.com/in/kolupula-harish-41a3a6330" target="_blank" rel="noopener noreferrer">Kolupula Harish</a></div>
-          </div>
-        </div>
-      </div>
-      <div class="footer-copyright">
-        <p>&copy; 2026 ParkWave. Specially developed for ultimate parking convenience. All rights reserved.</p>
-      </div>
-    </div>
+  <footer>
+    <p>&copy; 2026 ParkWave Smart Parking Solutions. All rights reserved.</p>
   </footer>
 
-  <!-- Fixed Floating Theme Toggle Button -->
-  <button onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">🌓</button>
-
-  <!-- Uber Style Bottom Navigation Bar for Mobile -->
-  <div class="uber-bottom-nav">
-    <a href="index.html" class="nav-item active" id="nav-home">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </a>
-    <a href="mall-selection.html" class="nav-item" id="nav-slots">
-      <span class="nav-icon">🚗</span>
-      <span class="nav-label">Book Slots</span>
-    </a>
-    <a href="mall-bookings.html" class="nav-item" id="nav-activity">
-      <span class="nav-icon">📋</span>
-      <span class="nav-label">Activity</span>
-    </a>
-    <button onclick="toggleAccountOverlay()" class="nav-item" id="nav-account" style="background:none; border:none; width:100%; cursor:pointer;">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Account</span>
-    </button>
-  </div>
-
-  <!-- Account Details Overlay Modal -->
-  <div class="account-overlay" id="accountOverlay" onclick="if(event.target === this) toggleAccountOverlay()">
-    <div class="account-card">
-      <div class="account-header">
-        <h3>Account Profile</h3>
-        <button onclick="toggleAccountOverlay()" class="close-overlay-btn">×</button>
-      </div>
-      <div class="account-content" id="accountContent"></div>
-    </div>
-  </div>
-
   <script>
-    // Theme Manager
-    function initTheme() {
-      const savedTheme = localStorage.getItem("theme") || "dark";
-      if (savedTheme === "light") {
-        document.documentElement.classList.add("light");
-      } else {
-        document.documentElement.classList.remove("light");
-      }
-    }
-    initTheme();
-
-    function toggleTheme() {
-      if (document.documentElement.classList.contains("light")) {
-        document.documentElement.classList.remove("light");
-        localStorage.setItem("theme", "dark");
-      } else {
-        document.documentElement.classList.add("light");
-        localStorage.setItem("theme", "light");
-      }
-    }
-
-    // Account Overlay Manager
-    function toggleAccountOverlay() {
-      const overlay = document.getElementById("accountOverlay");
-      if (!overlay) return;
-      
-      const email = localStorage.getItem("userEmail");
-      const userId = localStorage.getItem("userId");
-      
-      if (overlay.style.display === "flex") {
-        overlay.style.display = "none";
-      } else {
-        if (!userId) {
-          window.location.href = "login.html";
-          return;
-        }
-        
-        const content = document.getElementById("accountContent");
-        content.innerHTML = `
-          <div class="account-detail-row">
-            <span class="account-detail-label">Status</span>
-            <span class="account-detail-val" style="color: var(--accent);">● Active Session</span>
-          </div>
-          <div class="account-detail-row">
-            <span class="account-detail-label">Email Address</span>
-            <span class="account-detail-val">${email}</span>
-          </div>
-          <div class="account-detail-row">
-            <span class="account-detail-label">User ID</span>
-            <span class="account-detail-val">#${userId}</span>
-          </div>
-          <div class="account-btn-group">
-            <button onclick="logoutUser()" class="btn" style="background: #ef4444; color: white; width: 100%; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">Sign Out</button>
-            <button onclick="toggleAccountOverlay()" class="btn" style="background: rgba(255,255,255,0.08); color: var(--text-main); width: 100%; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 8px;">Close Profile</button>
-          </div>
-        `;
-        overlay.style.display = "flex";
-      }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
       const email = localStorage.getItem("userEmail");
       if (email) {
@@ -1102,6 +695,15 @@
             <button onclick="logoutUser()" class="btn btn-glass" style="padding: 16px 36px; font-size: 1.05rem;">Sign Out</button>
           `;
         }
+
+        // 4. Update Mobile Bottom Actions
+        const mobileBottom = document.querySelector(".mobile-bottom-actions");
+        if (mobileBottom) {
+          mobileBottom.innerHTML = `
+            <a href="mall-selection.html" class="btn btn-primary">Book Now</a>
+            <button onclick="logoutUser()" class="btn btn-glass">Sign Out</button>
+          `;
+        }
       }
     });
 
@@ -1116,6 +718,7 @@
             window.location.reload();
           })
           .catch(() => {
+            // Fallback in case of offline / network issue
             localStorage.removeItem("userId");
             localStorage.removeItem("userEmail");
             localStorage.removeItem("selectedMallId");

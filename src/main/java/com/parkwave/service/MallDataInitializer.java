@@ -8,7 +8,6 @@ import com.parkwave.entity.Mall;
 import com.parkwave.entity.MallParkingSlot;
 import com.parkwave.repository.MallRepository;
 import com.parkwave.repository.MallParkingSlotRepository;
-import com.parkwave.repository.MallBookingRepository;
 
 @Component
 public class MallDataInitializer implements CommandLineRunner {
@@ -19,31 +18,21 @@ public class MallDataInitializer implements CommandLineRunner {
     @Autowired
     private MallParkingSlotRepository mallParkingSlotRepository;
 
-    @Autowired
-    private MallBookingRepository mallBookingRepository;
-
     @Override
     public void run(String... args) throws Exception {
-        boolean hasBangalore = mallRepository.findAll().stream()
-            .anyMatch(m -> m.getLocation().contains("Bangalore"));
-            
-        if (mallRepository.count() == 0 || hasBangalore) {
-            // Clear old database state to allow clean transition
-            mallBookingRepository.deleteAll();
-            mallParkingSlotRepository.deleteAll();
-            mallRepository.deleteAll();
+        if (mallRepository.count() == 0) {
             initializeMalls();
         }
     }
 
     private void initializeMalls() {
-        // Create 5 popular Hyderabad malls
+        // Create 5 major malls
         Mall[] malls = {
-            createMall("Lulu Mall", "Kukatpally, Hyderabad", 500, 3, "Premium shopping destination with 500 parking slots"),
-            createMall("Inorbit Mall", "Madhapur, Hyderabad", 300, 2, "Family entertainment center with 300 parking slots"),
-            createMall("Sarath City Capital Mall", "Gachibowli, Hyderabad", 400, 3, "One of the largest malls in India with 400 parking slots"),
-            createMall("Nexus Forum Mall", "Kukatpally, Hyderabad", 250, 2, "Popular lifestyle mall with 250 parking slots"),
-            createMall("GVK One Mall", "Banjara Hills, Hyderabad", 200, 4, "Luxury shopping experience with 200 parking slots")
+            createMall("Phoenix Marketcity", "Whitefield, Bangalore", 500, 3, "Premium shopping destination with 500 parking slots"),
+            createMall("Orion Mall", "Rajajinagar, Bangalore", 300, 2, "Family entertainment center with 300 parking slots"),
+            createMall("Mantri Square", "Malleshwaram, Bangalore", 400, 3, "One of the largest malls with 400 parking slots"),
+            createMall("Forum Mall", "Koramangala, Bangalore", 250, 2, "Popular lifestyle mall with 250 parking slots"),
+            createMall("UB City", "Vittal Mallya Road, Bangalore", 200, 4, "Luxury mall with 200 parking slots")
         };
 
         for (Mall mall : malls) {

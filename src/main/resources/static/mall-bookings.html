@@ -434,12 +434,113 @@
         width: 100%;
       }
     }
+
+    /* PREMIUM CUSTOM TOAST NOTIFICATIONS */
+    .toast-container {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+      max-width: 380px;
+      width: calc(100% - 60px);
+    }
+    .toast {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 16px 20px;
+      border-radius: 14px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s ease;
+    }
+    .toast.success { border-color: var(--accent); background: rgba(16, 185, 129, 0.15); }
+    .toast.error { border-color: var(--danger); background: rgba(239, 68, 68, 0.15); }
+    @keyframes toastSlideIn {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .toast-close { margin-left: auto; cursor: pointer; opacity: 0.6; }
+    .toast-close:hover { opacity: 1; }
+
+    /* PREMIUM GLASSMORPHIC DIALOG MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+    .modal-content {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 36px 30px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalScaleIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 12px;
+    }
+    .modal-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
   </style>
 </head>
 <body>
 
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Interactive Confirmation Dialog Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-title" id="confirmTitle">Confirm Action</div>
+      <div class="modal-text" id="confirmText">Are you sure you want to proceed?</div>
+      <div class="modal-actions">
+        <button class="btn btn-glass" onclick="closeConfirmModal(false)">Cancel</button>
+        <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     
@@ -594,10 +695,45 @@
       `).join('');
     }
 
+    // CUSTOM TOAST NOTIFICATION HANDLER
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span>${type === 'success' ? '✓' : '✗'}</span>
+        <div>${message}</div>
+        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+
+    // CUSTOM DIALOG WINDOWS
+    let confirmResolver = null;
+    function customConfirm(title, text) {
+      document.getElementById("confirmTitle").textContent = title;
+      document.getElementById("confirmText").textContent = text;
+      document.getElementById("confirmModal").style.display = "flex";
+      return new Promise((resolve) => {
+        confirmResolver = resolve;
+      });
+    }
+
+    function closeConfirmModal(accepted) {
+      document.getElementById("confirmModal").style.display = "none";
+      if (confirmResolver) confirmResolver(accepted);
+    }
+
+    document.getElementById("confirmBtn").onclick = () => closeConfirmModal(true);
+
     function verifyTicket() {
       const searchId = document.getElementById("searchId").value;
       if (!searchId) {
-        alert("Please enter a valid Booking ID");
+        showToast("Please enter a valid Booking ID", "error");
         return;
       }
 
@@ -618,39 +754,44 @@
           document.getElementById("tDate").textContent = booking.bookingDate;
           document.getElementById("tCheckIn").textContent = booking.checkInTime || 'Not checked in';
           document.getElementById("tBarcodeNo").textContent = `TKT-${booking.id.toString().padStart(6, '0')}`;
+          showToast("Ticket successfully verified from database!");
         })
         .catch(err => {
-          alert("Ticket verification failed. Please check the Booking ID.");
+          showToast("Ticket verification failed. Please check the Booking ID.", "error");
           document.getElementById("ticketPass").style.display = "none";
         });
     }
 
     function completeBooking(bookingId) {
-      if (confirm('Are you sure you want to complete this booking?')) {
-        fetch(`/api/mall-bookings/complete/${bookingId}`, {
-          method: "POST"
-        })
-        .then(res => {
-          if (!res.ok) throw new Error();
-          alert('Booking completed successfully!');
-          loadUserBookings();
-        })
-        .catch(() => alert('Failed to complete booking'));
-      }
+      customConfirm("Complete Booking", "Are you sure you want to check out and complete this booking?")
+        .then(agreed => {
+          if (!agreed) return;
+          fetch(`/api/mall-bookings/complete/${bookingId}`, {
+            method: "POST"
+          })
+          .then(res => {
+            if (!res.ok) throw new Error();
+            showToast("Booking completed and slot released successfully!");
+            loadUserBookings();
+          })
+          .catch(() => showToast("Failed to complete booking", "error"));
+        });
     }
 
     function cancelBooking(bookingId) {
-      if (confirm('Are you sure you want to cancel this booking?')) {
-        fetch(`/api/mall-bookings/cancel/${bookingId}`, {
-          method: "POST"
-        })
-        .then(res => {
-          if (!res.ok) throw new Error();
-          alert('Booking cancelled successfully!');
-          loadUserBookings();
-        })
-        .catch(() => alert('Failed to cancel booking'));
-      }
+      customConfirm("Cancel Booking", "Are you sure you want to cancel your reservation? This cannot be undone.")
+        .then(agreed => {
+          if (!agreed) return;
+          fetch(`/api/mall-bookings/cancel/${bookingId}`, {
+            method: "POST"
+          })
+          .then(res => {
+            if (!res.ok) throw new Error();
+            showToast("Reservation cancelled and slot released successfully!");
+            loadUserBookings();
+          })
+          .catch(() => showToast("Failed to cancel booking", "error"));
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -663,22 +804,23 @@
     });
 
     function handleLogout() {
-      if (confirm("Are you sure you want to sign out?")) {
-        fetch("/api/users/logout", { method: "POST" })
-          .then(() => {
-            localStorage.removeItem("userId");
-            localStorage.removeItem("userEmail");
-            localStorage.removeItem("selectedMallId");
-            alert("Signed out successfully!");
-            window.location.href = "index.html";
-          })
-          .catch(() => {
-            localStorage.removeItem("userId");
-            localStorage.removeItem("userEmail");
-            localStorage.removeItem("selectedMallId");
-            window.location.href = "index.html";
-          });
-      }
+      customConfirm("Sign Out", "Are you sure you want to sign out?")
+        .then(agreed => {
+          if (!agreed) return;
+          fetch("/api/users/logout", { method: "POST" })
+            .then(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              window.location.href = "index.html";
+            })
+            .catch(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              window.location.href = "index.html";
+            });
+        });
     }
   </script>
 

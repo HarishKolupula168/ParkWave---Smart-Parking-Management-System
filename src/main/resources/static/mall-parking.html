@@ -1,655 +1,1034 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Mall Parking Map</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Parking Map - ParkWave</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #ec4899;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --dark-bg: #090d16;
+      --glass-bg: rgba(17, 24, 39, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
 
-body { 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-  min-height: 100vh;
-  padding: 20px;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      position: relative;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
 
-.header { 
-  display:flex; 
-  justify-content:space-between; 
-  align-items:center; 
-  margin-bottom:30px; 
-  flex-wrap: wrap;
-  gap: 20px;
-}
+    /* Glowing blur blobs */
+    .blob {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(130px);
+      z-index: -1;
+      opacity: 0.35;
+      animation: float 14s infinite alternate ease-in-out;
+    }
 
-.mall-info { 
-  background: rgba(255, 255, 255, 0.95); 
-  backdrop-filter: blur(10px);
-  padding:24px; 
-  border-radius:16px; 
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  flex: 1;
-}
+    .blob-1 {
+      background: var(--primary);
+      top: -100px;
+      left: -100px;
+    }
 
-.mall-info h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
+    .blob-2 {
+      background: var(--secondary);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: 3s;
+    }
 
-.mall-info p {
-  color: #64748b;
-  line-height: 1.6;
-}
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, 60px) scale(1.25); }
+    }
 
-.booking-btn { 
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); 
-  color:white; 
-  border:none; 
-  padding:12px 24px; 
-  border-radius:12px; 
-  cursor:pointer; 
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
-}
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
 
-.booking-btn:hover { 
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
-}
+    /* Unified Responsive Nav Bar */
+    .user-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 16px 24px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
 
-.level-tabs { 
-  display:flex; 
-  gap:12px; 
-  margin-bottom:30px; 
-  flex-wrap: wrap;
-}
+    .user-status {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.level-tab { 
-  background: rgba(255, 255, 255, 0.2);
-  color: white; 
-  border:1px solid rgba(255, 255, 255, 0.3);
-  padding:12px 24px; 
-  border-radius:12px; 
-  cursor:pointer; 
-  font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
-.level-tab.active { 
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: transparent;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-.level-tab:hover { 
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--glass-border);
+      color: var(--text-main);
+    }
 
-.level-tab.active:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
 
-.parking-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
 
-.parking-layout {
-  position: relative;
-  margin: 20px 0;
-}
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+    }
 
-.entry-exit-sign {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 14px;
-  margin: 16px 0;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
 
-.entry-exit-sign.entry {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-}
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+    }
 
-.entry-exit-sign.exit {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-}
+    /* Mall Map Header Info Box */
+    .mall-header-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
-.road {
-  background: #1f2937;
-  height: 40px;
-  margin: 20px 0;
-  border-radius: 8px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
+    .mall-meta h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
 
-.road::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    #fbbf24 0px,
-    #fbbf24 20px,
-    transparent 20px,
-    transparent 40px
-  );
-  transform: translateY(-50%);
-}
+    .mall-meta p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.road-label {
-  color: #fbbf24;
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  z-index: 1;
-  background: rgba(31, 41, 55, 0.8);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
+    .bookings-link-btn {
+      background: linear-gradient(135deg, var(--secondary) 0%, #db2777 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+    }
 
-.parking-grid { 
-  display:grid; 
-  grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); 
-  gap:12px; 
-  margin:20px 0; 
-}
+    .bookings-link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5);
+    }
 
-.connecting-road {
-  background: #1f2937;
-  height: 20px;
-  margin: 10px 0;
-  border-radius: 4px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  grid-column: 1 / -1;
-}
+    /* Level Selector Tabs */
+    .level-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
 
-.connecting-road::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    #fbbf24 0px,
-    #fbbf24 10px,
-    transparent 10px,
-    transparent 20px
-  );
-  transform: translateY(-50%);
-}
+    .level-tab {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
 
-.vertical-road {
-  background: #1f2937;
-  width: 20px;
-  margin: 0 10px;
-  border-radius: 4px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  grid-row: span 2;
-}
+    .level-tab.active {
+      background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
 
-.vertical-road::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: repeating-linear-gradient(
-    0deg,
-    #fbbf24 0px,
-    #fbbf24 10px,
-    transparent 10px,
-    transparent 20px
-  );
-  transform: translateX(-50%);
-}
+    .level-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
 
-.slot { 
-  width:90px; 
-  height:110px; 
-  border:2px solid #e2e8f0; 
-  border-radius:12px; 
-  display:flex; 
-  flex-direction:column; 
-  align-items:center; 
-  justify-content:center; 
-  font-size:11px; 
-  font-weight:600; 
-  cursor:pointer; 
-  transition:all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
+    /* Map Layout */
+    .map-container {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      margin-bottom: 40px;
+    }
 
-.slot::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: currentColor;
-  opacity: 0.3;
-}
+    .entry-exit-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      margin: 20px 0;
+      gap: 8px;
+    }
 
-.available { 
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
-  color:white; 
-  border-color: #10b981;
-}
+    .entry-exit-bar.entrance {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
 
-.booked { 
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
-  color:white; 
-  border-color: #ef4444;
-}
+    .entry-exit-bar.exit {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
 
-.handicapped { 
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
-  color:white; 
-  border-color: #f59e0b;
-}
+    .road {
+      background: #111827;
+      height: 48px;
+      border-radius: 10px;
+      margin: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-.vip { 
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); 
-  color:white; 
-  border-color: #8b5cf6;
-}
+    .road::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        #f59e0b 0px,
+        #f59e0b 20px,
+        transparent 20px,
+        transparent 40px
+      );
+      transform: translateY(-50%);
+      opacity: 0.8;
+    }
 
-.near-entrance { 
-  border-color: #10b981; 
-  border-width: 3px;
-}
+    .road-label {
+      color: #f59e0b;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      z-index: 2;
+      background: #111827;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
 
-.middle { 
-  border-color: #3b82f6; 
-  border-width: 3px;
-}
+    .parking-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
 
-.far { 
-  border-color: #64748b; 
-  border-width: 3px;
-}
+    /* Interactive Slots - Toggles Colors only */
+    .slot {
+      height: 120px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
 
-.slot:hover { 
-  transform:scale(1.05) translateY(-4px); 
-  box-shadow:0 8px 25px rgba(0,0,0,0.2);
-}
+    .slot-num {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
 
-.slot-number {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
+    .slot-state {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      opacity: 0.8;
+      letter-spacing: 0.05em;
+    }
 
-.slot-status {
-  font-size: 9px;
-  opacity: 0.9;
-  margin-bottom: 2px;
-}
+    .slot-zone-tag {
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
 
-.slot-zone {
-  font-size: 8px;
-  opacity: 0.8;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
+    /* Colors and states - static list toggling */
+    .slot.available {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
-.legend { 
-  display:flex; 
-  gap:20px; 
-  justify-content:center; 
-  margin:30px 0; 
-  flex-wrap: wrap;
-}
+    .slot.available:hover {
+      background: rgba(16, 185, 129, 0.22);
+      transform: scale(1.04) translateY(-3px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+    }
 
-.legend-item { 
-  display:flex; 
-  align-items:center; 
-  gap:8px; 
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px 16px;
-  border-radius: 8px;
-}
+    /* Generic booked by other users */
+    .slot.booked {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
 
-.legend-color { 
-  width:24px; 
-  height:24px; 
-  border-radius:6px; 
-}
+    .slot.booked:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+    }
 
-.back-link {
-  text-align: center;
-  margin-top: 30px;
-}
+    /* Explicit user slot lock style */
+    .slot.locked-by-me {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary-light);
+      color: white;
+      box-shadow: 0 0 15px rgba(79, 70, 229, 0.35);
+      animation: slotPulse 1.8s infinite alternate ease-in-out;
+    }
 
-.back-link a {
-  color: white;
-  text-decoration: none;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-  font-weight: 500;
-}
+    .slot.locked-by-me:hover {
+      background: rgba(79, 70, 229, 0.3);
+      transform: scale(1.04) translateY(-3px);
+      box-shadow: 0 8px 30px rgba(79, 70, 229, 0.55);
+    }
 
-.back-link a:hover {
-  opacity: 1;
-}
+    @keyframes slotPulse {
+      0% { border-color: var(--primary-light); }
+      100% { border-color: var(--secondary); }
+    }
 
-@media (max-width: 768px) {
-  .parking-grid {
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-  }
-  
-  .slot {
-    width: 70px;
-    height: 90px;
-  }
-  
-  .level-tabs {
-    justify-content: center;
-  }
-}
-</style>
+    /* Map Legend */
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+    }
+
+    /* Road networks */
+    .connecting-road {
+      background: #111827;
+      height: 24px;
+      border-radius: 6px;
+      grid-column: 1 / -1;
+      position: relative;
+    }
+
+    .connecting-road::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(
+        90deg,
+        #f59e0b 0px,
+        #f59e0b 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      transform: translateY(-50%);
+      opacity: 0.6;
+    }
+
+    .vertical-road {
+      background: #111827;
+      width: 24px;
+      border-radius: 6px;
+      position: relative;
+      grid-row: span 2;
+    }
+
+    .vertical-road::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: repeating-linear-gradient(
+        0deg,
+        #f59e0b 0px,
+        #f59e0b 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      transform: translateX(-50%);
+      opacity: 0.6;
+    }
+
+    /* PREMIUM CUSTOM TOAST NOTIFICATIONS */
+    .toast-container {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+      max-width: 380px;
+      width: calc(100% - 60px);
+    }
+
+    .toast {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 16px 20px;
+      border-radius: 14px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s ease;
+    }
+
+    .toast.success { border-color: var(--accent); background: rgba(16, 185, 129, 0.15); }
+    .toast.error { border-color: var(--danger); background: rgba(239, 68, 68, 0.15); }
+
+    @keyframes toastSlideIn {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast-close {
+      margin-left: auto;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+
+    .toast-close:hover { opacity: 1; }
+
+    /* PREMIUM GLASSMORPHIC DIALOG MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 36px 30px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalScaleIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .modal-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .modal-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .user-nav {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+      
+      .mall-header-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .bookings-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .parking-grid {
+        grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+      }
+
+      .slot {
+        height: 95px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="header" style="flex-direction: column; gap: 20px; align-items: stretch; width: 100%;">
-  <div id="userNav" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:12px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); width:100%;">
-    <span id="userStatus" style="font-size:0.9rem; font-weight:600; color:white;">Browsing as Guest</span>
-    <div id="navActions" style="display:flex; gap:10px; align-items:center;">
-      <a href="index.html" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Home</a>
-      <a href="mall-selection.html" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Change Mall</a>
-      <button onclick="handleLogout()" id="logoutBtn" style="display:none; background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">Sign Out</button>
-      <a href="login.html" id="signInBtn" style="background:linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.85rem;">Sign In</a>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Interactive Confirmation Dialog Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-title" id="confirmTitle">Confirm Action</div>
+      <div class="modal-text" id="confirmText">Are you sure you want to proceed?</div>
+      <div class="modal-actions">
+        <button class="btn btn-glass" onclick="closeConfirmModal(false)">Cancel</button>
+        <button class="btn btn-primary" id="confirmBtn">Confirm</button>
+      </div>
     </div>
   </div>
-  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 16px;">
-    <div class="mall-info" id="mallInfo" style="flex: 1;">
-      <h3 id="mallName">Loading...</h3>
-      <p id="mallDetails">Loading parking information...</p>
-    </div>
-    <button class="booking-btn" onclick="viewBookings()">My Bookings</button>
-  </div>
-</div>
 
-<div class="level-tabs" id="levelTabs"></div>
-
-<div class="legend">
-  <div class="legend-item">
-    <div class="legend-color" style="background:#2ecc71;"></div>
-    <span>Available</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-color" style="background:#e74c3c;"></div>
-    <span>Booked</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-color" style="background:#f39c12;"></div>
-    <span>Handicapped</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-color" style="background:#9b59b6;"></div>
-    <span>VIP</span>
-  </div>
-</div>
-
-<div class="parking-container">
-  <div class="parking-layout">
-    <div class="entry-exit-sign entry">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-      ENTRANCE
-    </div>
-    
-    <div class="road">
-      <span class="road-label">Main Access Road</span>
-    </div>
-    
-    <div class="parking-grid" id="parkingGrid"></div>
-    
-    <div class="road">
-      <span class="road-label">Exit Route</span>
-    </div>
-    
-    <div class="entry-exit-sign exit">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      EXIT
+  <!-- Guest Input Dialog Modal -->
+  <div class="modal-overlay" id="promptModal">
+    <div class="modal-content">
+      <div class="modal-title" id="promptTitle">Guest Booking</div>
+      <div class="modal-text" id="promptText">Please enter your name:</div>
+      <input type="text" id="promptInput" class="modal-input" placeholder="Your Name">
+      <div class="modal-actions">
+        <button class="btn btn-glass" onclick="closePromptModal(false)">Cancel</button>
+        <button class="btn btn-primary" id="promptBtn">Submit</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-const mallId = localStorage.getItem("selectedMallId");
-let currentLevel = 1;
-let mallData = null;
-
-// Load mall information
-fetch(`/api/malls/${mallId}`)
-  .then(res => res.json())
-  .then(mall => {
-    mallData = mall;
-    document.getElementById("mallName").textContent = mall.name;
-    document.getElementById("mallDetails").textContent = 
-      `${mall.location} | Total Slots: ${mall.totalSlots} | Levels: ${mall.parkingLevels}`;
+  <div class="container">
     
-    // Create level tabs
-    createLevelTabs(mall.parkingLevels);
-    
-    // Load first level
-    loadParkingSlots(currentLevel);
-  });
+    <!-- User Status Navigation Bar -->
+    <div class="user-nav">
+      <div class="user-status">
+        <span>👤</span>
+        <span id="userStatus">Browsing as Guest</span>
+      </div>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-glass">Home</a>
+        <a href="mall-selection.html" class="btn btn-glass">Change Mall</a>
+        <button onclick="handleLogout()" id="logoutBtn" class="btn btn-danger" style="display:none;">Sign Out</button>
+        <a href="login.html" id="signInBtn" class="btn btn-primary">Sign In</a>
+      </div>
+    </div>
 
-function createLevelTabs(levels) {
-  const container = document.getElementById("levelTabs");
-  container.innerHTML = "";
-  
-  for (let i = 1; i <= levels; i++) {
-    const button = document.createElement("button");
-    button.className = `level-tab ${i === 1 ? 'active' : ''}`;
-    button.textContent = `Level ${i}`;
-    button.onclick = () => switchLevel(i);
-    container.appendChild(button);
-  }
-}
+    <!-- Mall Metadata Header Card -->
+    <div class="mall-header-card">
+      <div class="mall-meta">
+        <h2 id="mallName">Loading Mall...</h2>
+        <p id="mallDetails">Loading information...</p>
+      </div>
+      <button class="btn bookings-link-btn" onclick="viewBookings()">📋 View My Bookings</button>
+    </div>
 
-function switchLevel(level) {
-  currentLevel = level;
-  
-  // Update active tab
-  document.querySelectorAll(".level-tab").forEach((tab, index) => {
-    tab.className = `level-tab ${index + 1 === level ? 'active' : ''}`;
-  });
-  
-  loadParkingSlots(level);
-}
+    <!-- Level Tabs -->
+    <div class="level-tabs" id="levelTabs"></div>
 
-function loadParkingSlots(level) {
-  fetch(`/api/mall-parking/slots/${mallId}/level/${level}`)
-    .then(res => res.json())
-    .then(slots => {
-      const container = document.getElementById("parkingGrid");
-      container.innerHTML = "";
-      container.style.display = "grid";
-      container.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
-      container.style.gap = "12px";
-      container.style.margin = "20px 0";
+    <!-- Map Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background: rgba(16, 185, 129, 0.2); border: 2px solid var(--accent);"></div>
+        <span>Available</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger);"></div>
+        <span>Booked</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: rgba(79, 70, 229, 0.3); border: 2px solid var(--primary-light);"></div>
+        <span>Booked by You (Locked)</span>
+      </div>
+    </div>
 
-      const slotsPerRow = 9; 
-      const totalRows = Math.ceil(slots.length / slotsPerRow);
+    <!-- Main Map Area -->
+    <div class="map-container">
+      <div class="entry-exit-bar entrance">⬇ ENTRANCE ROAD</div>
+      <div class="road"><span class="road-label">Access Highway</span></div>
 
-      for (let row = 0; row < totalRows; row++) {
-        // Add connecting road before each row except the first
-        if (row > 0) {
-          const road = document.createElement("div");
-          road.className = "connecting-road";
-          container.appendChild(road);
-        }
+      <!-- Real-Time Slots Grid -->
+      <div class="parking-grid" id="parkingGrid"></div>
 
-        // Add slots for this row with vertical roads
-        const startIdx = row * slotsPerRow;
-        const endIdx = Math.min(startIdx + slotsPerRow, slots.length);
-        
-        for (let i = startIdx; i < endIdx; i++) {
-          const slot = slots[i];
-          const div = document.createElement("div");
-          
-          let statusClass = slot.status === "BOOKED" ? "booked" : "available";
-          let typeClass = slot.slotType.toLowerCase();
-          let priorityClass = slot.priority.toLowerCase().replace('_', '-');
-          
-          div.className = `slot ${statusClass} ${typeClass} ${priorityClass}`;
-          
-          div.innerHTML = `
-            <div>${slot.slotNumber}</div>
-            <div style="font-size:10px;">${slot.status}</div>
-            <div style="font-size:8px;">${slot.zone}</div>
-          `;
+      <div class="road"><span class="road-label">Exit Route</span></div>
+      <div class="entry-exit-bar exit">⬆ EXIT ROAD</div>
+    </div>
 
-          if (slot.status === "AVAILABLE") {
-            div.onclick = () => bookSlot(slot.id);
-            div.title = `Book slot ${slot.slotNumber} (${slot.priority})`;
-          } else {
-            div.title = `Slot ${slot.slotNumber} is booked`;
-          }
+  </div>
 
-          container.appendChild(div);
+  <script>
+    const mallId = localStorage.getItem("selectedMallId");
+    const userId = localStorage.getItem("userId");
+    let currentLevel = 1;
+    let mallData = null;
+    let myActiveBookings = [];
 
-          // Add vertical road after 3rd and 6th slot only (2 vertical roads total)
-          const columnInRow = (i - startIdx + 1);
-          if (columnInRow === 3 || columnInRow === 6) {
-            const verticalRoad = document.createElement("div");
-            verticalRoad.className = "vertical-road";
-            container.appendChild(verticalRoad);
-          }
-        }
-      }
-    });
-}
+    // CUSTOM TOAST NOTIFICATION HANDLER
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span>${type === 'success' ? '✓' : '✗'}</span>
+        <div>${message}</div>
+        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
 
-function bookSlot(slotId) {
-  const userId = localStorage.getItem("userId");
-  
-  // Check if user is logged in
-  if (!userId) {
-    // Guest booking - create temporary user
-    const guestName = prompt("Enter your name for guest booking:");
-    if (!guestName) return;
-    
-    // Create guest booking without userId
-    fetch(`/api/mall-bookings/guest?guestName=${encodeURIComponent(guestName)}&mallId=${mallId}&slotId=${slotId}`, {
-      method: "POST"
-    })
-    .then(res => {
-      if (!res.ok) throw new Error();
-      return res.json();
-    })
-    .then(() => {
-      alert("Slot booked successfully as guest!");
-      loadParkingSlots(currentLevel);
-    })
-    .catch(() => alert("Booking failed - slot may already be booked"));
-  } else {
-    // Regular user booking
-    fetch(`/api/mall-bookings?userId=${userId}&mallId=${mallId}&slotId=${slotId}`, {
-      method: "POST"
-    })
-    .then(res => {
-      if (!res.ok) throw new Error();
-      return res.json();
-    })
-    .then(() => {
-      alert("Slot booked successfully!");
-      loadParkingSlots(currentLevel);
-    })
-    .catch(() => alert("Booking failed - slot may already be booked"));
-  }
-}
-
-function viewBookings() {
-  window.location.href = "mall-bookings.html";
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const email = localStorage.getItem("userEmail");
-  if (email) {
-    document.getElementById("userStatus").innerHTML = `Signed in as: <strong style="color: #818cf8;">${email}</strong>`;
-    document.getElementById("logoutBtn").style.display = "block";
-    document.getElementById("signInBtn").style.display = "none";
-  }
-});
-
-function handleLogout() {
-  if (confirm("Are you sure you want to sign out?")) {
-    fetch("/api/users/logout", { method: "POST" })
-      .then(() => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("selectedMallId");
-        alert("Signed out successfully!");
-        window.location.href = "index.html";
-      })
-      .catch(() => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("selectedMallId");
-        window.location.href = "index.html";
+    // CUSTOM DIALOG WINDOWS
+    let confirmResolver = null;
+    function customConfirm(title, text) {
+      document.getElementById("confirmTitle").textContent = title;
+      document.getElementById("confirmText").textContent = text;
+      document.getElementById("confirmModal").style.display = "flex";
+      return new Promise((resolve) => {
+        confirmResolver = resolve;
       });
-  }
-}
-</script>
+    }
+
+    function closeConfirmModal(accepted) {
+      document.getElementById("confirmModal").style.display = "none";
+      if (confirmResolver) confirmResolver(accepted);
+    }
+
+    document.getElementById("confirmBtn").onclick = () => closeConfirmModal(true);
+
+    let promptResolver = null;
+    function customPrompt(title, text) {
+      document.getElementById("promptTitle").textContent = title;
+      document.getElementById("promptText").textContent = text;
+      document.getElementById("promptInput").value = "";
+      document.getElementById("promptModal").style.display = "flex";
+      document.getElementById("promptInput").focus();
+      return new Promise((resolve) => {
+        promptResolver = resolve;
+      });
+    }
+
+    function closePromptModal(accepted) {
+      document.getElementById("promptModal").style.display = "none";
+      if (promptResolver) {
+        const val = document.getElementById("promptInput").value.trim();
+        promptResolver(accepted ? val : null);
+      }
+    }
+
+    document.getElementById("promptBtn").onclick = () => closePromptModal(true);
+
+    // Dynamic Navigation Bar Check
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (email) {
+        document.getElementById("userStatus").innerHTML = `Signed in as: <strong style="color: var(--primary-light);">${email}</strong>`;
+        document.getElementById("logoutBtn").style.display = "block";
+        document.getElementById("signInBtn").style.display = "none";
+      }
+      
+      // Load mall information and sync bookings first
+      syncSessionAndLoad();
+    });
+
+    // Sync bookings locally and pull active ones
+    function syncSessionAndLoad() {
+      // 1. Fetch user or guest active bookings to flag them as "Locked by Me"
+      let fetchUrl = userId ? `/api/mall-bookings/user/${userId}/active` : `/api/mall-bookings/mall/${mallId}`;
+      
+      fetch(fetchUrl)
+        .then(res => res.json())
+        .then(data => {
+          if (userId) {
+            myActiveBookings = data;
+          } else {
+            // Guest mode - filter by locally cached active IDs
+            const cachedIds = JSON.parse(localStorage.getItem("guestActiveBookingIds") || "[]");
+            myActiveBookings = data.filter(b => b.status === "ACTIVE" && cachedIds.includes(b.id));
+          }
+          
+          // 2. Load Mall details
+          return fetch(`/api/malls/${mallId}`);
+        })
+        .then(res => res.json())
+        .then(mall => {
+          mallData = mall;
+          document.getElementById("mallName").textContent = mall.name;
+          document.getElementById("mallDetails").textContent = 
+            `${mall.location} | Total Slots: ${mall.totalSlots} | Floors: ${mall.parkingLevels}`;
+          
+          // Generate level tabs
+          createLevelTabs(mall.parkingLevels);
+          
+          // Initial map load
+          loadParkingSlots(currentLevel);
+        })
+        .catch(() => showToast("Failed to load map data. Please reload.", "error"));
+    }
+
+    function createLevelTabs(levels) {
+      const container = document.getElementById("levelTabs");
+      container.innerHTML = "";
+      for (let i = 1; i <= levels; i++) {
+        const button = document.createElement("button");
+        button.className = `level-tab ${i === currentLevel ? 'active' : ''}`;
+        button.textContent = `Floor ${i}`;
+        button.onclick = () => {
+          currentLevel = i;
+          document.querySelectorAll(".level-tab").forEach((tab, index) => {
+            tab.className = `level-tab ${index + 1 === i ? 'active' : ''}`;
+          });
+          loadParkingSlots(i);
+        };
+        container.appendChild(button);
+      }
+    }
+
+    // STATIC LOAD - ONLY TOGGLES CLASSES ON REDRAW
+    function loadParkingSlots(level) {
+      fetch(`/api/mall-parking/slots/${mallId}/level/${level}`)
+        .then(res => res.json())
+        .then(slots => {
+          const container = document.getElementById("parkingGrid");
+          container.innerHTML = "";
+
+          const slotsPerRow = 9;
+          const totalRows = Math.ceil(slots.length / slotsPerRow);
+
+          for (let row = 0; row < totalRows; row++) {
+            if (row > 0) {
+              const road = document.createElement("div");
+              road.className = "connecting-road";
+              container.appendChild(road);
+            }
+
+            const startIdx = row * slotsPerRow;
+            const endIdx = Math.min(startIdx + slotsPerRow, slots.length);
+
+            for (let i = startIdx; i < endIdx; i++) {
+              const slot = slots[i];
+              const div = document.createElement("div");
+              
+              // Determine if slot is locked by current user
+              const activeBooking = myActiveBookings.find(b => b.parkingSlot.id === slot.id && b.status === "ACTIVE");
+              
+              let statusClass = "available";
+              let statusLabel = "Available";
+              
+              if (activeBooking) {
+                statusClass = "locked-by-me";
+                statusLabel = "Your Slot";
+              } else if (slot.status === "BOOKED") {
+                statusClass = "booked";
+                statusLabel = "Booked";
+              }
+
+              div.className = `slot ${statusClass}`;
+              div.id = `slot-${slot.id}`;
+              
+              div.innerHTML = `
+                <div class="slot-num">${slot.slotNumber}</div>
+                <div class="slot-state">${statusLabel}</div>
+                <div class="slot-zone-tag">${slot.zone}</div>
+              `;
+
+              // Dynamically configure static toggle clicks
+              if (activeBooking) {
+                div.onclick = () => openBookingManager(activeBooking.id, slot.id, slot.slotNumber);
+                div.title = `Manage your booking for slot ${slot.slotNumber}`;
+              } else if (slot.status === "AVAILABLE") {
+                div.onclick = () => triggerSlotBooking(slot.id, slot.slotNumber);
+                div.title = `Click to book slot ${slot.slotNumber}`;
+              } else {
+                div.onclick = () => showToast(`Slot ${slot.slotNumber} is booked by another user.`, "error");
+                div.title = `Slot ${slot.slotNumber} is fully occupied`;
+              }
+
+              container.appendChild(div);
+
+              // Inject vertical layout dividers
+              const colInRow = (i - startIdx + 1);
+              if (colInRow === 3 || colInRow === 6) {
+                const verticalRoad = document.createElement("div");
+                verticalRoad.className = "vertical-road";
+                container.appendChild(verticalRoad);
+              }
+            }
+          }
+        });
+    }
+
+    // Dynamic Color toggling without page refresh
+    function toggleSlotDOM(slotId, slotNumber, action) {
+      const slotElement = document.getElementById(`slot-${slotId}`);
+      if (!slotElement) return;
+
+      if (action === "book") {
+        slotElement.className = "slot locked-by-me";
+        slotElement.querySelector(".slot-state").textContent = "Your Slot";
+        showToast(`Slot ${slotNumber} is now booked and locked for you!`);
+      } else if (action === "release") {
+        slotElement.className = "slot available";
+        slotElement.querySelector(".slot-state").textContent = "Available";
+        // Re-bind booking click
+        slotElement.onclick = () => triggerSlotBooking(slotId, slotNumber);
+        showToast(`Slot ${slotNumber} released successfully!`);
+      }
+    }
+
+    function triggerSlotBooking(slotId, slotNumber) {
+      if (!userId) {
+        // Guest Flow
+        customPrompt("Guest Booking Details", "Please enter your name to complete the reservation:")
+          .then(guestName => {
+            if (!guestName) return;
+            
+            fetch(`/api/mall-bookings/guest?guestName=${encodeURIComponent(guestName)}&mallId=${mallId}&slotId=${slotId}`, {
+              method: "POST"
+            })
+            .then(res => {
+              if (!res.ok) throw new Error();
+              return res.json();
+            })
+            .then(booking => {
+              // Cache guest booking locally
+              const cached = JSON.parse(localStorage.getItem("guestActiveBookingIds") || "[]");
+              cached.push(booking.id);
+              localStorage.setItem("guestActiveBookingIds", JSON.stringify(cached));
+              
+              myActiveBookings.push(booking);
+              toggleSlotDOM(slotId, slotNumber, "book");
+              
+              // Bind manager click
+              const slotElement = document.getElementById(`slot-${slotId}`);
+              if (slotElement) slotElement.onclick = () => openBookingManager(booking.id, slotId, slotNumber);
+            })
+            .catch(() => showToast("Booking failed. The slot may have been taken.", "error"));
+          });
+      } else {
+        // Registered User Flow
+        customConfirm("Confirm Reservation", `Do you want to book and lock parking slot ${slotNumber}?`)
+          .then(agreed => {
+            if (!agreed) return;
+
+            fetch(`/api/mall-bookings?userId=${userId}&mallId=${mallId}&slotId=${slotId}`, {
+              method: "POST"
+            })
+            .then(res => {
+              if (!res.ok) throw new Error();
+              return res.json();
+            })
+            .then(booking => {
+              myActiveBookings.push(booking);
+              toggleSlotDOM(slotId, slotNumber, "book");
+              
+              // Bind manager click
+              const slotElement = document.getElementById(`slot-${slotId}`);
+              if (slotElement) slotElement.onclick = () => openBookingManager(booking.id, slotId, slotNumber);
+            })
+            .catch(() => showToast("Booking failed. The slot may have been taken.", "error"));
+          });
+      }
+    }
+
+    // Direct active booking release/completion manager from map
+    function openBookingManager(bookingId, slotId, slotNumber) {
+      customConfirm("Manage Active Booking", `You have already locked slot ${slotNumber}. Would you like to check out / release this slot now?`)
+        .then(release => {
+          if (!release) return;
+
+          fetch(`/api/mall-bookings/complete/${bookingId}`, {
+            method: "POST"
+          })
+          .then(res => {
+            if (!res.ok) throw new Error();
+            
+            // Remove from active bookings array
+            myActiveBookings = myActiveBookings.filter(b => b.id !== bookingId);
+            
+            // Dynamically toggle slots locally to green
+            toggleSlotDOM(slotId, slotNumber, "release");
+          })
+          .catch(() => showToast("Failed to complete check out.", "error"));
+        });
+    }
+
+    function handleLogout() {
+      customConfirm("Logout", "Are you sure you want to sign out?")
+        .then(agreed => {
+          if (!agreed) return;
+          fetch("/api/users/logout", { method: "POST" })
+            .then(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              window.location.href = "index.html";
+            })
+            .catch(() => {
+              localStorage.removeItem("userId");
+              localStorage.removeItem("userEmail");
+              localStorage.removeItem("selectedMallId");
+              window.location.href = "index.html";
+            });
+        });
+    }
+
+    function viewBookings() {
+      window.location.href = "mall-bookings.html";
+    }
+  </script>
 
 </body>
 </html>

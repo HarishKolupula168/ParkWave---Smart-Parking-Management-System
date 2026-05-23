@@ -8,6 +8,7 @@ import com.parkwave.entity.Mall;
 import com.parkwave.entity.MallParkingSlot;
 import com.parkwave.repository.MallRepository;
 import com.parkwave.repository.MallParkingSlotRepository;
+import com.parkwave.repository.MallBookingRepository;
 
 @Component
 public class MallDataInitializer implements CommandLineRunner {
@@ -18,6 +19,9 @@ public class MallDataInitializer implements CommandLineRunner {
     @Autowired
     private MallParkingSlotRepository mallParkingSlotRepository;
 
+    @Autowired
+    private MallBookingRepository mallBookingRepository;
+
     @Override
     public void run(String... args) throws Exception {
         boolean hasBangalore = mallRepository.findAll().stream()
@@ -25,6 +29,7 @@ public class MallDataInitializer implements CommandLineRunner {
             
         if (mallRepository.count() == 0 || hasBangalore) {
             // Clear old database state to allow clean transition
+            mallBookingRepository.deleteAll();
             mallParkingSlotRepository.deleteAll();
             mallRepository.deleteAll();
             initializeMalls();

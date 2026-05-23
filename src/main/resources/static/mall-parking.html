@@ -259,10 +259,8 @@
 
     .map-scroll-wrapper {
       width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.15) transparent;
+      overflow-x: visible;
+      overflow-y: visible;
     }
 
     .map-scroll-wrapper::-webkit-scrollbar {
@@ -275,7 +273,7 @@
     }
 
     .map-floor-plan {
-      min-width: 1050px;
+      min-width: 0;
     }
 
     .entry-exit-bar {
@@ -346,8 +344,8 @@
 
     .parking-grid {
       display: grid;
-      grid-template-columns: repeat(11, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
       margin: 24px 0;
     }
 
@@ -462,10 +460,9 @@
       border-radius: 6px;
     }
 
-    /* Road networks */
     .connecting-road {
-      background: #111827;
-      height: 24px;
+      background: #1f2937;
+      height: 20px;
       border-radius: 6px;
       grid-column: 1 / -1;
       position: relative;
@@ -487,34 +484,6 @@
       );
       transform: translateY(-50%);
       opacity: 0.6;
-    }
-
-    .vertical-road {
-      background: #1f2937;
-      border-radius: 8px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 120px;
-    }
-
-    .vertical-road::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 8px;
-      bottom: 8px;
-      width: 3px;
-      background: repeating-linear-gradient(
-        0deg,
-        #f59e0b 0px,
-        #f59e0b 8px,
-        transparent 8px,
-        transparent 16px
-      );
-      transform: translateX(-50%);
-      opacity: 0.7;
     }
 
     /* PREMIUM CUSTOM TOAST NOTIFICATIONS */
@@ -790,6 +759,11 @@
       .bookings-link-btn {
         width: 100%;
         justify-content: center;
+      }
+
+      .parking-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
       }
 
       .slot {
@@ -1201,98 +1175,79 @@
     // STATIC LOAD - ONLY TOGGLES CLASSES ON REDRAW
     function loadParkingSlots(level) {
       const container = document.getElementById("parkingGrid");
-      container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);font-size:0.9rem;">Loading slots...</div>`;
+      container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);font-size:0.95rem;">⏳ Loading parking slots...</div>`;
 
-      console.log("[ParkWave] Loading slots for mallId:", mallId, "level:", level);
-
-      if (!mallId || mallId === "null") {
-        container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:#f87171;font-size:0.9rem;">⚠ No mall selected. <a href="mall-selection.html" style="color:var(--accent)">Select a mall</a></div>`;
+      if (!mallId || mallId === "null" || mallId === "undefined") {
+        container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#f87171;">⚠ No mall selected. <a href="mall-selection.html" style="color:var(--accent);text-decoration:underline;">Select a mall first</a></div>`;
         return;
       }
 
-      fetch(`/api/mall-parking/slots/${mallId}/level/${level}`)
+      const apiUrl = `/api/mall-parking/slots/${mallId}/level/${level}`;
+
+      fetch(apiUrl)
         .then(res => {
-          console.log("[ParkWave] Slots API response status:", res.status);
-          if (!res.ok) throw new Error("Slots API returned " + res.status);
+          if (!res.ok) throw new Error(`API error ${res.status}`);
           return res.json();
         })
         .then(slots => {
-          console.log("[ParkWave] Slots received:", slots.length, slots);
           container.innerHTML = "";
 
-          if (!slots || slots.length === 0) {
-            container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No slots found for this floor.</div>`;
+          if (!Array.isArray(slots) || slots.length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No parking slots on this floor.</div>`;
             return;
           }
 
-          const slotsPerRow = 9;
-          const totalRows = Math.ceil(slots.length / slotsPerRow);
-
-          for (let row = 0; row < totalRows; row++) {
-            if (row > 0) {
+          // Render every slot in a simple grid — no vertical road injections
+          slots.forEach((slot, i) => {
+            // Add a connecting road divider every 10 slots
+            if (i > 0 && i % 10 === 0) {
               const road = document.createElement("div");
               road.className = "connecting-road";
               container.appendChild(road);
             }
 
-            const startIdx = row * slotsPerRow;
-            const endIdx = Math.min(startIdx + slotsPerRow, slots.length);
+            const div = document.createElement("div");
 
-            for (let i = startIdx; i < endIdx; i++) {
-              const slot = slots[i];
-              const div = document.createElement("div");
-              
-              // Determine if slot is locked by current user
-              const activeBooking = myActiveBookings.find(b => b.parkingSlot && b.parkingSlot.id === slot.id && b.status === "ACTIVE");
-              
-              let statusClass = "available";
-              let statusLabel = "Available";
-              
-              if (activeBooking) {
-                statusClass = "locked-by-me";
-                statusLabel = "Your Slot";
-              } else if (slot.status === "BOOKED") {
-                statusClass = "booked";
-                statusLabel = "Booked";
-              }
+            // Determine slot state
+            const activeBooking = myActiveBookings.find(b => b.parkingSlot && b.parkingSlot.id === slot.id && b.status === "ACTIVE");
 
-              div.className = `slot ${statusClass}`;
-              div.id = `slot-${slot.id}`;
-              
-              div.innerHTML = `
-                <div class="slot-num">${slot.slotNumber}</div>
-                <div class="slot-state">${statusLabel}</div>
-                <div class="slot-zone-tag">${slot.zone || 'Z'}</div>
-              `;
+            let statusClass = "available";
+            let statusLabel = "Available";
 
-              // Dynamically configure static toggle clicks
-              if (activeBooking) {
-                div.onclick = () => openBookingManager(activeBooking.id, slot.id, slot.slotNumber);
-                div.title = `Manage your booking for slot ${slot.slotNumber}`;
-              } else if (slot.status === "AVAILABLE") {
-                div.onclick = () => triggerSlotBooking(slot.id, slot.slotNumber);
-                div.title = `Click to book slot ${slot.slotNumber}`;
-              } else {
-                div.onclick = () => showToast(`Slot ${slot.slotNumber} is booked by another user.`, "error");
-                div.title = `Slot ${slot.slotNumber} is fully occupied`;
-              }
-
-              container.appendChild(div);
-
-              // Inject vertical aisle dividers after slot 3 and slot 6
-              const colInRow = (i - startIdx + 1);
-              if (colInRow === 3 || colInRow === 6) {
-                const verticalRoad = document.createElement("div");
-                verticalRoad.className = "vertical-road";
-                container.appendChild(verticalRoad);
-              }
+            if (activeBooking) {
+              statusClass = "locked-by-me";
+              statusLabel = "Your Slot";
+            } else if (slot.status === "BOOKED") {
+              statusClass = "booked";
+              statusLabel = "Booked";
             }
-          }
+
+            div.className = `slot ${statusClass}`;
+            div.id = `slot-${slot.id}`;
+
+            div.innerHTML = `
+              <div class="slot-num">${slot.slotNumber || 'S' + (i+1)}</div>
+              <div class="slot-state">${statusLabel}</div>
+              <div class="slot-zone-tag">${slot.zone || ''}</div>
+            `;
+
+            // Attach click handlers
+            if (activeBooking) {
+              div.onclick = () => openBookingManager(activeBooking.id, slot.id, slot.slotNumber);
+              div.title = `Manage your booking for slot ${slot.slotNumber}`;
+            } else if (slot.status === "AVAILABLE") {
+              div.onclick = () => triggerSlotBooking(slot.id, slot.slotNumber);
+              div.title = `Click to book slot ${slot.slotNumber}`;
+            } else {
+              div.onclick = () => showToast(`Slot ${slot.slotNumber} is booked by another user.`, "error");
+              div.title = `Slot ${slot.slotNumber} is occupied`;
+            }
+
+            container.appendChild(div);
+          });
         })
         .catch(err => {
-          console.error("[ParkWave] Failed to load slots:", err);
-          container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#f87171;">⚠ Could not load parking slots. Check your connection or <a href="javascript:location.reload()" style="color:var(--accent)">reload</a>.</div>`;
-          showToast("Failed to load parking slots. " + err.message, "error");
+          container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#f87171;font-size:0.95rem;">⚠ Failed to load slots: ${err.message}<br><a href="javascript:location.reload()" style="color:var(--accent);text-decoration:underline;margin-top:10px;display:inline-block;">Tap to reload</a></div>`;
         });
     }
 

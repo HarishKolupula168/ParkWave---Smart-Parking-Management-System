@@ -21,6 +21,5 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git config --global credential.helper store
-          echo "https://token:$HF_TOKEN@huggingface.co" > ~/.git-credentials
-          git push --force https://huggingface.co/spaces/HarishKolupula168/ParkWave HEAD:main
+          HF_TOKEN_ENCODED=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read().strip()))" <<< "$HF_TOKEN")
+          git push --force https://HarishKolupula168:$HF_TOKEN_ENCODED@huggingface.co/spaces/HarishKolupula168/ParkWave HEAD:main

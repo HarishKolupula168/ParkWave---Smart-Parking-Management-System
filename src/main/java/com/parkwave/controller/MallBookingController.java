@@ -2,6 +2,7 @@ package com.parkwave.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.parkwave.entity.MallBooking;
 import com.parkwave.service.MallBookingService;
@@ -15,12 +16,12 @@ public class MallBookingController {
     private MallBookingService mallBookingService;
 
     @PostMapping
-    public MallBooking createBooking(@RequestParam int userId, @RequestParam int mallId, @RequestParam int slotId) {
+    public ResponseEntity<?> createBooking(@RequestParam int userId, @RequestParam int mallId, @RequestParam int slotId) {
         MallBooking result = mallBookingService.createBooking(userId, mallId, slotId);
         if (result == null) {
-            throw new RuntimeException("Booking failed - slot may not be available");
+            return ResponseEntity.badRequest().body("Booking failed - slot may not be available");
         }
-        return result;
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/user/{userId}")
@@ -29,12 +30,12 @@ public class MallBookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public MallBooking getBookingById(@PathVariable int bookingId) {
+    public ResponseEntity<?> getBookingById(@PathVariable int bookingId) {
         MallBooking booking = mallBookingService.getBookingById(bookingId);
         if (booking == null) {
-            throw new RuntimeException("Booking not found");
+            return ResponseEntity.status(404).body("Booking not found");
         }
-        return booking;
+        return ResponseEntity.ok(booking);
     }
 
     @GetMapping("/user/{userId}/active")
@@ -54,12 +55,12 @@ public class MallBookingController {
     }
 
     @PostMapping("/guest")
-    public MallBooking createGuestBooking(@RequestParam String guestName, @RequestParam int mallId, @RequestParam int slotId) {
+    public ResponseEntity<?> createGuestBooking(@RequestParam String guestName, @RequestParam int mallId, @RequestParam int slotId) {
         MallBooking result = mallBookingService.createGuestBooking(guestName, mallId, slotId);
         if (result == null) {
-            throw new RuntimeException("Guest booking failed - slot may not be available");
+            return ResponseEntity.badRequest().body("Guest booking failed - slot may not be available");
         }
-        return result;
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/complete/{bookingId}")

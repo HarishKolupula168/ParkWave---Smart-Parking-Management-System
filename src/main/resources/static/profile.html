@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <title>User Profile - ParkWave</title>
   <!-- Google Fonts & Lucide CDN -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -612,6 +615,13 @@
             </div>
             <i data-lucide="chevron-right" style="width:16px; height:16px; opacity:0.5;"></i>
           </a>
+          <div class="menu-item" id="install-pwa-btn" style="display: none; color: var(--accent); cursor: pointer;" onclick="installPWA()">
+            <div class="menu-item-left">
+              <i data-lucide="download" style="color: var(--accent);"></i>
+              <span style="color: var(--accent);">Install ParkWave App</span>
+            </div>
+            <i data-lucide="download" style="width:16px; height:16px; color: var(--accent);"></i>
+          </div>
         </div>
 
         <button class="btn-signout" onclick="signOutAction()">
@@ -631,6 +641,10 @@
           <div class="guest-actions">
             <a href="login.html" class="guest-btn guest-btn-primary">Sign In</a>
             <a href="register.html" class="guest-btn guest-btn-secondary">Create Account</a>
+            <button class="guest-btn guest-btn-secondary" id="guest-install-pwa-btn" style="display: none; border-color: var(--accent); color: var(--accent); margin-top: 10px;" onclick="installPWA()">
+              <i data-lucide="download" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+              Install PWA App
+            </button>
           </div>
         </div>
       </div>
@@ -819,6 +833,52 @@
         setTimeout(() => toast.remove(), 300);
       }, 3500);
     }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registered successfully with scope:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+
+    // In-app PWA Installation Flow
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      const installBtn = document.getElementById('install-pwa-btn');
+      const guestInstallBtn = document.getElementById('guest-install-pwa-btn');
+      if (installBtn) installBtn.style.display = 'flex';
+      if (guestInstallBtn) guestInstallBtn.style.display = 'flex';
+    });
+
+    function installPWA() {
+      if (!deferredPrompt) return;
+      
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          showToast('Thank you for installing ParkWave!');
+        }
+        deferredPrompt = null;
+        
+        const installBtn = document.getElementById('install-pwa-btn');
+        const guestInstallBtn = document.getElementById('guest-install-pwa-btn');
+        if (installBtn) installBtn.style.display = 'none';
+        if (guestInstallBtn) guestInstallBtn.style.display = 'none';
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      showToast('ParkWave App installed successfully!', 'success');
+      const installBtn = document.getElementById('install-pwa-btn');
+      const guestInstallBtn = document.getElementById('guest-install-pwa-btn');
+      if (installBtn) installBtn.style.display = 'none';
+      if (guestInstallBtn) guestInstallBtn.style.display = 'none';
+    });
   </script>
 </body>
 </html>

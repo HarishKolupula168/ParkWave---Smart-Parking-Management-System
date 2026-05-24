@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Admin Login - ParkWave</title>
 <style>
 body { font-family:Arial; background:#f4f6f8; padding:20px; display:flex; justify-content:center; align-items:center; min-height:100vh; }
@@ -64,6 +71,15 @@ function login(event) {
   .catch(() => {
     document.getElementById("error").style.display = "block";
     document.getElementById("error").textContent = "Invalid username or password";
+  });
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registered successfully with scope:', reg.scope))
+      .catch(err => console.error('Service Worker registration failed:', err));
   });
 }
 </script>

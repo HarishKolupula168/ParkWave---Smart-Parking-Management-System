@@ -10,12 +10,7 @@ const PRECACHE_ASSETS = [
   '/mall-selection.html',
   '/mall-parking.html',
   '/mall-bookings.html',
-  '/manifest.json',
-  '/icons/icon-72.png',
-  '/icons/icon-96.png',
-  '/icons/icon-144.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/manifest.json'
 ];
 
 // Install Event - Pre-cache essential app shell assets

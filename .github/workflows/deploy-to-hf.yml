@@ -21,4 +21,6 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://HarishKolupula168:$HF_TOKEN@huggingface.co/spaces/HarishKolupula168/ParkWave HEAD:main
+          git config --global credential.helper store
+          echo "https://token:$HF_TOKEN@huggingface.co" > ~/.git-credentials
+          git push --force https://huggingface.co/spaces/HarishKolupula168/ParkWave HEAD:main
